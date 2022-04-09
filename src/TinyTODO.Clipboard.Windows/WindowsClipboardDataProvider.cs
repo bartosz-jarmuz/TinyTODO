@@ -1,9 +1,10 @@
 ﻿using System.Windows;
+using TinyTODO.Core.Contracts;
 using TinyTODO.Core.DataModel;
 
 namespace TinyTODO.Core.Windows;
 
-public partial class ClipboardDataProvider
+public class WindowsClipboardDataProvider : IClipboardDataProvider
 {
     public ClipboardData? GetData()
     {

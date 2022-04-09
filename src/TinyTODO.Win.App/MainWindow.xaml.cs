@@ -23,9 +23,10 @@ namespace TinyTODO.App.Windows;
 public partial class MainWindow : Window
 {
     private IConfirmationEmitter _confirmationEmitter = new ConsoleBeepEmitter();
-    private ClipboardDataProvider _clipboardProvider = new ClipboardDataProvider();
+    private IClipboardDataProvider _clipboardProvider = new WindowsClipboardDataProvider();
     private IToDoItemStorage _storage = new ToDoItemStorage();
     private IToDoItemPresenter _presenter = new TempPresenter();
+    private IContextProvider _contextProvider = new WindowsContextProvider();
 
     public MainWindow()
     {
@@ -37,7 +38,7 @@ public partial class MainWindow : Window
     public void OnHotkey(object? sender, object args)
     {
         ClipboardData? data = _clipboardProvider.GetData();
-        ToDoContext? context = ContextProvider.GetToDoContext();
+        ToDoContext? context = _contextProvider.GetToDoContext();
         if (data == null)
         {
             _confirmationEmitter.NoData();
@@ -45,6 +46,7 @@ public partial class MainWindow : Window
         }
 
         ToDoItem? todoItem = new ToDoItem(data, context);
+
         _storage.PersistAsync(todoItem);
         _presenter.Present(todoItem);
 
