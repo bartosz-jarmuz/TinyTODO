@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TinyTODO.App.Windows.ViewModel;
 using TinyTODO.Core;
 using TinyTODO.Core.Contracts;
 using TinyTODO.Core.DataModel;
@@ -27,10 +28,12 @@ public partial class MainWindow : Window
     private IToDoItemStorage _storage = new ToDoItemStorage();
     private IToDoItemPresenter _presenter = new TempPresenter();
     private IContextProvider _contextProvider = new WindowsContextProvider();
-
+    private MainWindowViewModel _viewModel;
     public MainWindow()
     {
         InitializeComponent();
+        _viewModel = new MainWindowViewModel();
+        DataContext = _viewModel;
 
         HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.StoreClipboardContent, Key.C, ModifierKeys.Shift | ModifierKeys.Alt, (sender, args) => OnHotkey(sender, args));
     }
@@ -48,7 +51,7 @@ public partial class MainWindow : Window
         ToDoItem? todoItem = new ToDoItem(data, context);
 
         _storage.PersistAsync(todoItem);
-        _presenter.Present(todoItem);
+        _viewModel.Add(todoItem);
 
         _confirmationEmitter.Done();
     }

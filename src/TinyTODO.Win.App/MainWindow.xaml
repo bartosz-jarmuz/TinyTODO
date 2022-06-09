@@ -3,10 +3,45 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TinyTODO.App.Windows"
+        xmlns:vm="clr-namespace:TinyTODO.App.Windows.ViewModel" 
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
+        
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <RichTextBox></RichTextBox>
-    </Grid>
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+    <DockPanel LastChildFill="True">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Options"></MenuItem>
+            <MenuItem IsCheckable="True"  Header="Show completed"></MenuItem>
+        </Menu>
+        <ListBox ItemsSource="{Binding Items}" HorizontalContentAlignment="Stretch">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <DockPanel LastChildFill="True" MaxWidth="1500" Background="Black" Grid.Column="0" >
+                            <xctk:RichTextBox Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=DockPanel}}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" 
+                                          IsReadOnly="True" Text="{Binding Data.Data, Mode=OneWay}">
+                                <xctk:RichTextBox.TextFormatter>
+                                    <xctk:RtfFormatter />
+                                </xctk:RichTextBox.TextFormatter>
+                            </xctk:RichTextBox>
+                        </DockPanel>
+                        <DockPanel Grid.Column="1">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Context.ActiveWindowTitle}"></TextBlock>
+                                <TextBlock Text="{Binding Context.TimeStamp}"></TextBlock>
+                            </StackPanel>
+                        </DockPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
 </Window>
