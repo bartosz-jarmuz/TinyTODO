@@ -15,15 +15,20 @@ namespace TinyTODO.Core
             _toDoDbContext.Database.EnsureCreated();
         }
 
-        public async Task PersistAsync(ToDoItem item)
+        public async Task InsertAsync(ToDoItem item)
         {
             await _toDoDbContext.ToDoItems.AddAsync(item);
             await _toDoDbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<ToDoItem>> LoadAll()
+        public async Task<IEnumerable<ToDoItem>> LoadAllAsync()
         {
             return await _toDoDbContext.ToDoItems.ToListAsync();
+        }
+
+        public async Task SaveAsync()
+        {
+            await _toDoDbContext.SaveChangesAsync();
         }
 
         protected virtual void Dispose(bool disposing)

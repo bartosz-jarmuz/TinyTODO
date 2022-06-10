@@ -4,86 +4,19 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:TinyTODO.App.Windows.ViewModel" 
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        
         Title="MainWindow" Height="450" Width="800" Closing="Window_Closing" Loaded="Window_Loaded_1">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
-    <Window.Resources>
-        <Style x:Key="TypedValueHelper" TargetType="{x:Type ContentControl}">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding Path=DataType}" Value="1">
-                    <Setter Property="ContentTemplate">
-                        <Setter.Value>
-                            <DataTemplate>
-                                <xctk:RichTextBox Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=DockPanel}}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" 
-                                          IsReadOnly="True" Text="{Binding Path=TextData, Mode=OneWay}">
-                                    <xctk:RichTextBox.TextFormatter>
-                                        <xctk:RtfFormatter />
-                                    </xctk:RichTextBox.TextFormatter>
-                                </xctk:RichTextBox>
-                            </DataTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Path=DataType}" Value="0">
-                    <Setter Property="ContentTemplate">
-                        <Setter.Value>
-                            <DataTemplate>
-                                <Label Content="{Binding Path=PlainTextData}" />
-                            </DataTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Path=DataType}" Value="2">
-                    <Setter Property="ContentTemplate">
-                        <Setter.Value>
-                            <DataTemplate>
-                                <Label Content="{Binding Path=PlainTextData}" />
-                            </DataTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Path=DataType}" Value="3">
-                    <Setter Property="ContentTemplate">
-                        <Setter.Value>
-                            <DataTemplate>
-                                <Image Source="{Binding Image}" MaxHeight="200"/>
-                            </DataTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Resources>
     <DockPanel LastChildFill="True">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Options"></MenuItem>
-            <MenuItem IsCheckable="True"  Header="Show completed"></MenuItem>
+            <MenuItem IsCheckable="True" IsChecked="{Binding ShowCompleted}"  Header="Show completed"/>
         </Menu>
-        <ListBox ItemsSource="{Binding Items}" HorizontalContentAlignment="Stretch">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid >
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <DockPanel LastChildFill="True" MaxWidth="1500"  Grid.Column="0" >
-                            <ContentControl Content="{Binding .}" Style="{StaticResource TypedValueHelper}"/>
-                        </DockPanel>
-                        <DockPanel Grid.Column="1">
-                            <StackPanel>
-                                <TextBlock Text="{Binding ActiveWindowTitle}"></TextBlock>
-                                <TextBlock Text="{Binding CreatedDateTime}"></TextBlock>
-                            </StackPanel>
-                        </DockPanel>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <ListBox ItemsSource="{Binding Items}" 
+                 Style="{StaticResource ToDoListStyle}"
+                 ItemContainerStyle="{StaticResource ToDoListItemStyle}" 
+                 ItemTemplate="{StaticResource ToDoItemDataTemplate}"/>
     </DockPanel>
 </Window>

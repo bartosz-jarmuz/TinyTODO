@@ -34,20 +34,17 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         _viewModel = new MainWindowViewModel();
+        _viewModel.Storage = _storage;
         DataContext = _viewModel;
 
         HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.StoreClipboardContent, Key.C, ModifierKeys.Shift | ModifierKeys.Alt, (sender, args) => OnHotkey(sender, args));
     }
 
-    private async void Window_Loaded(object sender, RoutedEventArgs e)
-    {
-        
 
-    }
 
     private void Window_Loaded_1(object sender, RoutedEventArgs e)
     {
-        var items = Task.Run(() =>_storage.LoadAll()).Result;
+        var items = Task.Run(() =>_storage.LoadAllAsync()).Result;
         foreach (var item in items)
         {
             _viewModel.Items.Insert(0, new DisplayableToDoItem(item));
@@ -66,7 +63,7 @@ public partial class MainWindow : Window
 
         ToDoItem? todoItem = new ToDoItem(data, context);
 
-        _storage.PersistAsync(todoItem);
+        _storage.InsertAsync(todoItem);
         _viewModel.Add(todoItem);
 
         _confirmationEmitter.Done();
