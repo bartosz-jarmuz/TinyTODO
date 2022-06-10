@@ -15,7 +15,7 @@ namespace TinyTODO.App.Windows.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        private bool showCompleted;
+        private bool showCompleted = Properties.Settings.Default.ShowCompleted;
 
         public IToDoItemStorage Storage { get; set; }
 
@@ -25,6 +25,8 @@ namespace TinyTODO.App.Windows.ViewModel
             set
             {
                 showCompleted = value;
+                Properties.Settings.Default.ShowCompleted = value;
+                Properties.Settings.Default.Save();
                 OnPropertyChanged();
             }
         }
