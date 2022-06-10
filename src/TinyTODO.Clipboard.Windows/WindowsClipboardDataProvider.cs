@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Text;
+using System.Windows;
+using System.Windows.Media.Imaging;
 using TinyTODO.Core.Contracts;
 using TinyTODO.Core.DataModel;
 
@@ -8,31 +10,43 @@ public class WindowsClipboardDataProvider : IClipboardDataProvider
 {
     public ClipboardData? GetData()
     {
-        DataObject? data = System.Windows.Clipboard.GetDataObject() as DataObject;
-        if (data == null)
+        DataObject? dataObject = Clipboard.GetDataObject() as DataObject;
+        if (dataObject == null)
         {
             return null;
         }
-
-        if (data.GetDataPresent(DataFormats.Html))
+        var plainText = Clipboard.GetText();
+        if (dataObject.GetDataPresent(DataFormats.Html))
         {
-            return new ClipboardData(ClipboardDataType.Html, data.GetData(DataFormats.Html));
+            var data = dataObject.GetData(DataFormats.Html);
+            return new ClipboardData(ClipboardDataType.Html, plainText, DataConverter.GetBytes(data?.ToString()??""));
         }
-        else if (data.GetDataPresent(DataFormats.Rtf))
+        else if (dataObject.GetDataPresent(DataFormats.Rtf))
         {
-            return new ClipboardData(ClipboardDataType.RichText, data.GetData(DataFormats.Rtf));
+            var data = dataObject.GetData(DataFormats.Rtf);
+            return new ClipboardData(ClipboardDataType.RichText, plainText, DataConverter.GetBytes(data?.ToString() ?? ""));
         }
         else if (Clipboard.ContainsImage())
         {
-            return new ClipboardData(ClipboardDataType.Image, Clipboard.GetImage());
+            var data = Clipboard.GetImage();
+            if (data is BitmapSource bitmapSource)
+            {
+                return new ClipboardData(ClipboardDataType.Image, plainText, DataConverter.GetBytes(bitmapSource));
+            }
+            else
+            {
+                throw new InvalidOperationException($"Clipboard data is supposed to be an image but the type is not expected: [{dataObject.GetType()}");
+            }
         }
         else if (Clipboard.ContainsText())
         {
-            return new ClipboardData(ClipboardDataType.PlainText, Clipboard.GetText());
+            return new ClipboardData(ClipboardDataType.PlainText, plainText, DataConverter.GetBytes(Clipboard.GetText()));
         }
         else
         {
-            return new ClipboardData(ClipboardDataType.Unsupported, $"Unsupported format: [{string.Join(", ", Clipboard.GetDataObject().GetFormats())}]");
+            return new ClipboardData(ClipboardDataType.Unsupported, $"Unsupported format: [{string.Join(", ", Clipboard.GetDataObject().GetFormats())}]", Array.Empty<byte>());
         }
     }
+
+    
 }

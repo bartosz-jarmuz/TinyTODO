@@ -7,7 +7,7 @@ namespace TinyTODO.Core;
 
 public class WindowsContextProvider : IContextProvider
 {
-    public ToDoContext GetToDoContext()
+    public ItemCreationContext GetToDoContext()
     {
         const int nChars = 256;
         StringBuilder Buff = new StringBuilder(nChars);
@@ -18,7 +18,7 @@ public class WindowsContextProvider : IContextProvider
             windowTitle = Buff.ToString();
         }
 
-        return new ToDoContext(windowTitle);
+        return new ItemCreationContext(windowTitle);
     }
 
     [DllImport("user32.dll")]

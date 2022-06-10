@@ -4,5 +4,5 @@ namespace TinyTODO.Core.Contracts;
 
 public interface IContextProvider
 {
-    ToDoContext GetToDoContext();
+    ItemCreationContext GetToDoContext();
 }

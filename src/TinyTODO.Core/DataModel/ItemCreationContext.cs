@@ -2,9 +2,9 @@
 
 namespace TinyTODO.Core.DataModel
 {
-    public record ToDoContext
+    public record ItemCreationContext
     {
-        public ToDoContext(string? activeWindowTitle)
+        public ItemCreationContext(string? activeWindowTitle)
         {
             TimeStamp = DateTime.UtcNow;
             ActiveWindowTitle = activeWindowTitle;

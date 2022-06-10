@@ -2,17 +2,14 @@
 
 public record ClipboardData
 {
-    public ClipboardData(ClipboardDataType dataType, object data)
+    public ClipboardData(ClipboardDataType dataType, string? plainText, byte[] rawData)
     {
         DataType = dataType;
-        Data = data;
+        PlainText = plainText;
+        RawData = rawData;
     }
 
     public ClipboardDataType DataType { get; }
-    public object Data { get; }
-
-    public override string ToString()
-    {
-        return Data?.ToString() ?? "[NoData]";
-    }
+    public string? PlainText { get; }
+    public byte[] RawData { get; }
 }

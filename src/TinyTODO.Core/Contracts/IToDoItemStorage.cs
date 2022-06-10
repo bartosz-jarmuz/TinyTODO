@@ -2,8 +2,9 @@
 
 namespace TinyTODO.Core.Contracts
 {
-    public interface IToDoItemStorage
+    public interface IToDoItemStorage : IDisposable
     {
-        void PersistAsync(ToDoItem item);
+        Task<IEnumerable<ToDoItem>> LoadAll();
+        Task PersistAsync(ToDoItem item);
     }
 }

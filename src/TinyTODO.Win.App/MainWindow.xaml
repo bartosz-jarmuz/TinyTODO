@@ -7,10 +7,57 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" Closing="Window_Closing" Loaded="Window_Loaded_1">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
+    <Window.Resources>
+        <Style x:Key="TypedValueHelper" TargetType="{x:Type ContentControl}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=DataType}" Value="1">
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <xctk:RichTextBox Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=DockPanel}}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" 
+                                          IsReadOnly="True" Text="{Binding Path=TextData, Mode=OneWay}">
+                                    <xctk:RichTextBox.TextFormatter>
+                                        <xctk:RtfFormatter />
+                                    </xctk:RichTextBox.TextFormatter>
+                                </xctk:RichTextBox>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=DataType}" Value="0">
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <Label Content="{Binding Path=PlainTextData}" />
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=DataType}" Value="2">
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <Label Content="{Binding Path=PlainTextData}" />
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=DataType}" Value="3">
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <Image Source="{Binding Image}" MaxHeight="200"/>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <DockPanel LastChildFill="True">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Options"></MenuItem>
@@ -25,18 +72,13 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <DockPanel LastChildFill="True" MaxWidth="1500" Background="Black" Grid.Column="0" >
-                            <xctk:RichTextBox Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=DockPanel}}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" 
-                                          IsReadOnly="True" Text="{Binding Data.Data, Mode=OneWay}">
-                                <xctk:RichTextBox.TextFormatter>
-                                    <xctk:RtfFormatter />
-                                </xctk:RichTextBox.TextFormatter>
-                            </xctk:RichTextBox>
+                        <DockPanel LastChildFill="True" MaxWidth="1500"  Grid.Column="0" >
+                            <ContentControl Content="{Binding .}" Style="{StaticResource TypedValueHelper}"/>
                         </DockPanel>
                         <DockPanel Grid.Column="1">
                             <StackPanel>
-                                <TextBlock Text="{Binding Context.ActiveWindowTitle}"></TextBlock>
-                                <TextBlock Text="{Binding Context.TimeStamp}"></TextBlock>
+                                <TextBlock Text="{Binding ActiveWindowTitle}"></TextBlock>
+                                <TextBlock Text="{Binding CreatedDateTime}"></TextBlock>
                             </StackPanel>
                         </DockPanel>
                     </Grid>
