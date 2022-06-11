@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:TinyTODO.App.Windows.ViewModel" 
         mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="11"
@@ -17,8 +18,8 @@
         <vm:MainWindowViewModel/>
     </Window.DataContext>
     <DockPanel LastChildFill="True">
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="Options"></MenuItem>
+        <Menu DockPanel.Dock="Top" materialDesign:MenuAssist.TopLevelMenuItemHeight="25">
+            <MenuItem materialDesign:MenuAssist.TopLevelMenuItemHeight="25" Header="Options"></MenuItem>
             <MenuItem IsCheckable="True" IsChecked="{Binding ShowCompleted}"  Header="Show completed"/>
         </Menu>
         <ListBox ItemsSource="{Binding Items}" 

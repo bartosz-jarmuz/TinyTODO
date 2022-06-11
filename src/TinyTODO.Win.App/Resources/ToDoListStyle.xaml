@@ -5,7 +5,7 @@
                      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         
                     >
-    <Style TargetType="{x:Type ListBox}" x:Key="ToDoListStyle" >
+    <Style TargetType="{x:Type ListBox}" x:Key="ToDoListStyle" BasedOn="{StaticResource MaterialDesignListBox}">
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="Margin" Value="2"/>
         <Setter Property="BorderThickness" Value="0"/>
@@ -61,6 +61,8 @@
 
 
     <DataTemplate x:Key="ToDoItemDataTemplate">
+        <materialDesign:Card Margin="5">
+            
         <Grid >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50"/>
@@ -72,15 +74,17 @@
             </DockPanel>
             <DockPanel LastChildFill="True" MaxWidth="1500" Grid.Column="1" >
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-                        <TextBlock Text="{Binding CreatedDateTime}"  Margin="5"/>
+                        <TextBlock Text="{Binding CreatedDateTime}"  Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="5"/>
                         <TextBlock Text="{Binding ActiveWindowTitle}" Margin="5"/>
                 </StackPanel>
                 <ContentControl Content="{Binding .}" Style="{StaticResource ToDoItemControlSelector}" />
             </DockPanel>
         </Grid>
+        </materialDesign:Card>
+
     </DataTemplate>
 
-    <Style TargetType="{x:Type ListBoxItem}" x:Key="ToDoListItemStyle">
+    <Style TargetType="{x:Type ListBoxItem}" x:Key="ToDoListItemStyle" BasedOn="{StaticResource MaterialDesignListBoxItem}">
         <Style.Resources>
             <converters:ToDoItemVisibilityConverter x:Key="ToDoItemVisibilityConverter" />
         </Style.Resources>
