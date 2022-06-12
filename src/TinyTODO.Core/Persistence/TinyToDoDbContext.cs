@@ -1,12 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using System.Reflection;
 using TinyTODO.Core.DataModel;
 
 namespace TinyTODO.Core
 {
-    public class ToDoDbContext : DbContext 
+    public class TinyToDoDbContext : DbContext 
     {
+        public TinyToDoDbContext()
+        {
+            Database.EnsureCreated();
+        }
+
         public DbSet<ToDoItem> ToDoItems { get; set; }
+        public DbSet<Setting> Settings { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -19,6 +28,7 @@ namespace TinyTODO.Core
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Setting>().HasKey(s => s.Key);
             base.OnModelCreating(modelBuilder);
         }
 

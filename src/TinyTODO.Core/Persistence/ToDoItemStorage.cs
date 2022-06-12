@@ -6,13 +6,12 @@ namespace TinyTODO.Core
 {
     public class ToDoItemStorage : IToDoItemStorage
     {
-        private readonly ToDoDbContext _toDoDbContext;
+        private readonly TinyToDoDbContext _toDoDbContext;
         private bool disposedValue;
 
         public ToDoItemStorage()
         {
-            _toDoDbContext = new ToDoDbContext();
-            _toDoDbContext.Database.EnsureCreated();
+            _toDoDbContext = new TinyToDoDbContext();
         }
 
         public async Task InsertAsync(ToDoItem item)

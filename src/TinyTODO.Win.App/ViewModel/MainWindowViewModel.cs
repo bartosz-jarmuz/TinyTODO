@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using TinyTODO.App.Windows.Model;
+using TinyTODO.Core;
 using TinyTODO.Core.Contracts;
 using TinyTODO.Core.DataModel;
 
@@ -15,7 +16,7 @@ namespace TinyTODO.App.Windows.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        private bool showCompleted = Properties.Settings.Default.ShowCompleted;
+        private bool showCompleted = Settings.Instance.ShowCompleted;
 
         public IToDoItemStorage Storage { get; set; }
 
@@ -25,8 +26,7 @@ namespace TinyTODO.App.Windows.ViewModel
             set
             {
                 showCompleted = value;
-                Properties.Settings.Default.ShowCompleted = value;
-                Properties.Settings.Default.Save();
+                Settings.Instance.ShowCompleted = value;
                 OnPropertyChanged();
             }
         }
