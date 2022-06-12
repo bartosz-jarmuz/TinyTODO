@@ -5,9 +5,10 @@
                      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         
                     >
+    <converters:WidthMinusConverter x:Key="WidthMinusConverter"/>
+
     <Style TargetType="{x:Type ListBox}" x:Key="ToDoListStyle" >
-        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        <Setter Property="Margin" Value="2"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
 
@@ -27,9 +28,11 @@
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
                         <DataTemplate>
-                            <xctk:RichTextBox Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=DockPanel}}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" 
-                                        MaxHeight="220" IsReadOnly="True" Text="{Binding Path=TextData, Mode=OneWay}"
-                                              BorderThickness="0">
+                            <xctk:RichTextBox MaxHeight="220" Text="{Binding Path=TextData}"
+                                              HorizontalAlignment="Left"
+                                              BorderThickness="0"
+                                              ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Auto">
                                 <xctk:RichTextBox.TextFormatter>
                                     <xctk:RtfFormatter />
                                 </xctk:RichTextBox.TextFormatter>
@@ -42,7 +45,7 @@
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
                         <DataTemplate>
-                            <TextBox Text="{Binding Path=PlainTextData}" BorderThickness="0"/>
+                            <TextBox  Text="{Binding Path=PlainTextData}" BorderThickness="0"/>
                         </DataTemplate>
                     </Setter.Value>
                 </Setter>
@@ -51,7 +54,7 @@
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
                         <DataTemplate>
-                            <Image Source="{Binding Image}" MaxHeight="200"/>
+                            <Image HorizontalAlignment="Left" Source="{Binding Image}" MaxHeight="220" />
                         </DataTemplate>
                     </Setter.Value>
                 </Setter>
@@ -61,23 +64,31 @@
 
 
     <DataTemplate x:Key="ToDoItemDataTemplate">
-        <Grid >
+        <Border Padding="5" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="2">
+            
+        <Grid x:Name="foo" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="25"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <DockPanel LastChildFill="True" Grid.Column="0" >
-                <CheckBox IsChecked="{Binding IsCompleted}"/>
+            <DockPanel LastChildFill="True" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  >
+                    <CheckBox IsChecked="{Binding IsCompleted}" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" VerticalAlignment="Stretch"/>
             </DockPanel>
-            <DockPanel LastChildFill="True" MaxWidth="1500" Grid.Column="1" >
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-                        <TextBlock Text="{Binding CreatedDateTime}"  Margin="5"/>
-                        <TextBlock Text="{Binding ActiveWindowTitle}" Margin="5"/>
+            <DockPanel Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBox}, 
+                Converter={StaticResource WidthMinusConverter}, ConverterParameter=100}" 
+                       LastChildFill="True" HorizontalAlignment="Stretch" Grid.Column="1">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" >
+                    <TextBlock Margin="5">
+                            <Run Text="{Binding CreatedDateTimeFormatted, Mode=OneWay}" FontWeight="Bold" FontSize="13"/>
+                            <Run Text="{Binding TimeDifference, Mode=OneWay}" FontWeight="SemiBold" FontSize="12"/>
+                    </TextBlock>
+                    <TextBlock Text="{Binding ActiveWindowTitle}" Margin="5"/>
                 </StackPanel>
-                <ContentControl Content="{Binding .}" Style="{StaticResource ToDoItemControlSelector}" />
+                <ContentControl HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" Content="{Binding .}" Style="{StaticResource ToDoItemControlSelector}" />
             </DockPanel>
         </Grid>
+        </Border>
+
     </DataTemplate>
 
     <Style TargetType="{x:Type ListBoxItem}" x:Key="ToDoListItemStyle">
@@ -86,10 +97,11 @@
         </Style.Resources>
         <Style.Triggers>
             <DataTrigger Binding="{Binding Path=IsCompleted}" Value="True">
-                <Setter Property="Opacity" Value="0.5" />
+                <Setter Property="Opacity" Value="0.2" />
             </DataTrigger>
         </Style.Triggers>
         <Setter Property="Focusable" Value="False"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="Visibility">
             <Setter.Value>
                 <MultiBinding Converter="{StaticResource ToDoItemVisibilityConverter}">

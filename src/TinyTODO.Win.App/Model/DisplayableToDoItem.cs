@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using TinyTODO.Core;
 using TinyTODO.Core.DataModel;
 using TinyTODO.Core.Windows;
 
@@ -35,6 +36,7 @@ namespace TinyTODO.App.Windows.Model
             CompletedDateTime = item.CompletedDateTime;
             IsCompleted = item.IsCompleted;
             Id = item.Id;
+            _ = Update();
         }
 
         public Guid Id { get; set; }
@@ -51,6 +53,8 @@ namespace TinyTODO.App.Windows.Model
         public ClipboardDataType DataType { get; set; }
         public string? ActiveWindowTitle { get; set; }
         public DateTime CreatedDateTime { get; set; }
+        public string CreatedDateTimeFormatted => $"{CreatedDateTime.ToLocalTime().ToString("dddd, dd MMMM HH:mm")}";
+        public string TimeDifference => $"({DateTimeExtensions.GetTimeDifference(CreatedDateTime)})";
         public DateTime CompletedDateTime { get; set; }
         public string? PlainTextData { get; set; }
         public string? TextData { get; set; }
@@ -58,6 +62,32 @@ namespace TinyTODO.App.Windows.Model
         public ToDoItem Item { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        private async Task Update()
+        {
+            while (true)
+            {
+                OnPropertyChanged(nameof(TimeDifference));
+                await Task.Delay(CalculateDelay());
+            }
+            TimeSpan CalculateDelay()
+            {
+                var diff = DateTime.UtcNow - CreatedDateTime;
+                if (diff <= TimeSpan.FromSeconds(90))
+                {
+                    return TimeSpan.FromSeconds(1);
+                } else if (diff <= TimeSpan.FromMinutes(60))
+                {
+                    return TimeSpan.FromMinutes(1);
+                }
+                else
+                {
+                    return TimeSpan.FromHours(1);
+                }
+            }
+        }
+
+        
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
