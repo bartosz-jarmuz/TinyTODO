@@ -1,4 +1,5 @@
-﻿using NHotkey.Wpf;
+﻿using System;
+using NHotkey.Wpf;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Hardcodet.Wpf.TaskbarNotification;
+using TinyTODO.App.Windows.Commands;
 using TinyTODO.App.Windows.Model;
 using TinyTODO.App.Windows.ViewModel;
 using TinyTODO.Core;
@@ -23,13 +26,16 @@ namespace TinyTODO.App.Windows;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : Window
+public partial class MainWindow : Window, IDisposable
 {
     private IConfirmationEmitter _confirmationEmitter = new ConsoleBeepEmitter();
     private IClipboardDataProvider _clipboardProvider = new WindowsClipboardDataProvider();
     private IToDoItemStorage _storage = new ToDoItemStorage();
     private IContextProvider _contextProvider = new WindowsContextProvider();
     private MainWindowViewModel _viewModel;
+    private bool _isDisposed;
+    private readonly TaskbarIcon _taskbarIcon;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -38,8 +44,20 @@ public partial class MainWindow : Window
         DataContext = _viewModel;
 
         HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.StoreClipboardContent, Key.C, ModifierKeys.Shift | ModifierKeys.Alt, (sender, args) => OnHotkey(sender, args));
+
+        _taskbarIcon = (TaskbarIcon)FindResource("MainTaskbarIcon");
+        InitializeTaskbarIcon();
     }
 
+    private void InitializeTaskbarIcon()
+    {
+        _taskbarIcon.DoubleClickCommand = new ShowWindowCommand(this);
+        _taskbarIcon.ContextMenu = new ContextMenu();
+        var closeButton = new MenuItem();
+        closeButton.Command = new ExitApplicationCommand(this);
+        closeButton.Header = "Exit";
+        _taskbarIcon.ContextMenu.Items.Add(closeButton);
+    }
 
 
     private void Window_Loaded_1(object sender, RoutedEventArgs e)
@@ -49,6 +67,14 @@ public partial class MainWindow : Window
         {
             _viewModel.Items.Insert(0, new DisplayableToDoItem(item));
         }
+    }
+
+    protected override void OnStateChanged(EventArgs e)
+    {
+        if (WindowState == WindowState.Minimized && Settings.Instance.MinimizeToTray)
+            this.Hide();
+
+        base.OnStateChanged(e);
     }
 
     public void OnHotkey(object? sender, object args)
@@ -69,10 +95,31 @@ public partial class MainWindow : Window
         _confirmationEmitter.Done();
     }
 
-       private void Window_Closing(object sender, CancelEventArgs e)
+    private void Window_Closing(object sender, CancelEventArgs e)
     {
-        _storage.Dispose();
+        if (Settings.Instance.CloseToTray)
+        {
+            e.Cancel = true;
+            this.Hide();
+        }
     }
 
-   
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_isDisposed)
+        {
+            if (disposing)
+            {
+                _storage.Dispose();
+                _taskbarIcon.Dispose();
+            }
+            _isDisposed = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
 }
