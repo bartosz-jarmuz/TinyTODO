@@ -3,8 +3,7 @@
                     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                     xmlns:converters="clr-namespace:TinyTODO.App.Windows.Converters"
                      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        
-                    >
+                     xmlns:model="clr-namespace:TinyTODO.App.Windows.Model">
     <converters:WidthMinusConverter x:Key="WidthMinusConverter"/>
 
     <Style TargetType="{x:Type ListBox}" x:Key="ToDoListStyle" >
@@ -13,12 +12,12 @@
     </Style>
 
 
-    <Style x:Key="ToDoItemControlSelector" TargetType="{x:Type ContentControl}">
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding Path=DataType}" Value="0">
+  <Style TargetType="{x:Type ContentControl}" x:Key="ToDoItemControlSelector" >
+      <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=DataType}" Value="0" >
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
-                        <DataTemplate>
+            <DataTemplate DataType="model:DisplayableToDoItem">
                             <TextBox Text="{Binding Path=PlainTextData}" BorderThickness="0"/>
                         </DataTemplate>
                     </Setter.Value>
@@ -27,7 +26,7 @@
             <DataTrigger Binding="{Binding Path=DataType}" Value="1">
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
-                        <DataTemplate>
+            <DataTemplate DataType="model:DisplayableToDoItem">
                             <xctk:RichTextBox MaxHeight="220" Text="{Binding Path=TextData}"
                                               HorizontalAlignment="Left"
                                               BorderThickness="0"
@@ -44,7 +43,7 @@
             <DataTrigger Binding="{Binding Path=DataType}" Value="2">
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
-                        <DataTemplate>
+                        <DataTemplate DataType="model:DisplayableToDoItem">
                             <TextBox  Text="{Binding Path=PlainTextData}" BorderThickness="0"/>
                         </DataTemplate>
                     </Setter.Value>
@@ -53,7 +52,7 @@
             <DataTrigger Binding="{Binding Path=DataType}" Value="3">
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
-                        <DataTemplate>
+                        <DataTemplate DataType="model:DisplayableToDoItem">
                             <Image HorizontalAlignment="Left" Source="{Binding Image}" MaxHeight="220" />
                         </DataTemplate>
                     </Setter.Value>
@@ -63,9 +62,8 @@
     </Style>
 
 
-    <DataTemplate x:Key="ToDoItemDataTemplate">
-        <Border Padding="5" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="2">
-            
+    <DataTemplate x:Key="ToDoItemDataTemplate" DataType="model:DisplayableToDoItem">
+      <Border Padding="5" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="2">
         <Grid x:Name="foo" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="25"/>
@@ -88,7 +86,6 @@
             </DockPanel>
         </Grid>
         </Border>
-
     </DataTemplate>
 
     <Style TargetType="{x:Type ListBoxItem}" x:Key="ToDoListItemStyle">

@@ -16,16 +16,13 @@ namespace TinyTODO.App.Windows.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        private bool showCompleted = Settings.Instance.ShowCompleted;
-
         public IToDoItemStorage Storage { get; set; }
 
         public bool ShowCompleted
         {
-            get => showCompleted; 
+            get => Settings.Instance.ShowCompleted; 
             set
             {
-                showCompleted = value;
                 Settings.Instance.ShowCompleted = value;
                 OnPropertyChanged();
             }
@@ -58,6 +55,11 @@ namespace TinyTODO.App.Windows.ViewModel
         async Task MyType_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             await Storage.SaveAsync();
+        }
+
+        public void UpdateSettingBasedProperties()
+        {
+            OnPropertyChanged(nameof(ShowCompleted));
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

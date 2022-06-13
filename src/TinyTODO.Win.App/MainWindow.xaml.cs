@@ -122,4 +122,11 @@ public partial class MainWindow : Window, IDisposable
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+
+    private void MenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        var settings = new SettingsWindow(Settings.Instance);
+        settings.ShowDialog();
+        _viewModel.UpdateSettingBasedProperties();
+    }
 }
