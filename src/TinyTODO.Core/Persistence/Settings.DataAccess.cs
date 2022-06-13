@@ -13,7 +13,7 @@ namespace TinyTODO.Core
                 _dbContext = dbContext;
             }
 
-            public T Get<T>(string key) 
+            public T Get<T>(string key, T defaultValue) 
             {
                 var setting = _dbContext.Settings.Find(key);
                 
@@ -25,7 +25,7 @@ namespace TinyTODO.Core
                     };
                     _dbContext.Settings.Add(setting);
                     _dbContext.SaveChanges();
-                    return default;
+                    return defaultValue;
                 }
                 switch (Type.GetTypeCode(typeof(T)))
                 {
@@ -46,7 +46,7 @@ namespace TinyTODO.Core
                 T ValueOrDefault(object? value)
                 {
                     if (value == null) 
-                        return default(T);
+                        return defaultValue;
                     else 
                         return (T)value;
                 }
