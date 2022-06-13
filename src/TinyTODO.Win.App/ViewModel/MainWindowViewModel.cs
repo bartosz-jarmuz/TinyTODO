@@ -16,7 +16,19 @@ namespace TinyTODO.App.Windows.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        public IToDoItemStorage Storage { get; set; }
+#pragma warning disable CS8618
+        public MainWindowViewModel(){}
+#pragma warning restore CS8618
+
+        public MainWindowViewModel(IToDoItemStorage toDoItemStorage)
+        {
+            this.Storage = toDoItemStorage;
+            this.ToDoItems = new ObservableCollection<ToDoItemViewModel>();
+            this.ToDoItems.CollectionChanged += OnToDoItemsCollectionChange;
+
+        }
+
+        private IToDoItemStorage Storage { get; }
 
         public bool ShowCompleted
         {
@@ -28,31 +40,34 @@ namespace TinyTODO.App.Windows.ViewModel
             }
         }
 
-        public MainWindowViewModel()
-        {
-            this.Items = new ObservableCollection<DisplayableToDoItem>();
-            this.Items.CollectionChanged += MyItemsSource_CollectionChanged;
-        }
+        public ObservableCollection<ToDoItemViewModel> ToDoItems { get; set; }
 
-        public ObservableCollection<DisplayableToDoItem> Items { get; set; }
+        public async Task Initialize()
+        {
+            var items = await Storage.LoadAllAsync();
+            foreach (var item in items)
+            {
+                ToDoItems.Insert(0, new ToDoItemViewModel(item));
+            }
+        }
 
         public void Add(ToDoItem todoItem)
         {
-            Items.Insert(0, new DisplayableToDoItem(todoItem));
+            ToDoItems.Insert(0, new ToDoItemViewModel(todoItem));
         }
 
-        void MyItemsSource_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        void OnToDoItemsCollectionChange(object? sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
-                foreach (DisplayableToDoItem item in e.NewItems)
-                    item.PropertyChanged += async (s, e) => await MyType_PropertyChanged(s, e);
+                foreach (ToDoItemViewModel item in e.NewItems)
+                    item.PropertyChanged += async (s, e) => await OnToDoItemPropertyChanged(s, e);
 
             if (e.OldItems != null)
-                foreach (DisplayableToDoItem item in e.OldItems)
-                    item.PropertyChanged -= async (s, e) => await MyType_PropertyChanged(s, e);
+                foreach (ToDoItemViewModel item in e.OldItems)
+                    item.PropertyChanged -= async (s, e) => await OnToDoItemPropertyChanged(s, e);
         }
 
-        async Task MyType_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        async Task OnToDoItemPropertyChanged(object? sender, PropertyChangedEventArgs? e)
         {
             await Storage.SaveAsync();
         }
@@ -62,11 +77,12 @@ namespace TinyTODO.App.Windows.ViewModel
             OnPropertyChanged(nameof(ShowCompleted));
         }
 
+#region PropertyChanged
         public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        private void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
+#endregion
     }
 }

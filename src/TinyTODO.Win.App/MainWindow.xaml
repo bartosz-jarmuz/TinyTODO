@@ -10,17 +10,17 @@
         TextElement.FontSize="11"
         TextOptions.TextFormattingMode="Ideal" 
         TextOptions.TextRenderingMode="Auto"        
-        Title="TinyToDo" Height="450" Width="800" Closing="Window_Closing" Loaded="Window_Loaded_1">
+        Title="TinyToDo" Height="450" Width="800" Closing="Window_Closing" Loaded="MainWindow_OnLoaded">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
     <DockPanel LastChildFill="True">
       
     <Menu DockPanel.Dock="Top">
-            <MenuItem Header="Options" Click="MenuItem_OnClick"></MenuItem>
+            <MenuItem Header="Options" Click="ShowOptionsMenuItem_OnClick"></MenuItem>
             <MenuItem IsCheckable="True" IsChecked="{Binding ShowCompleted, Mode=TwoWay}"  Header="Show completed"/>
         </Menu>
-        <ListBox ItemsSource="{Binding Items}" 
+        <ListBox ItemsSource="{Binding ToDoItems}" 
                  AlternationCount="2"
                  Style="{StaticResource ToDoListStyle}"
                  ItemContainerStyle="{StaticResource ToDoListItemStyle}" 

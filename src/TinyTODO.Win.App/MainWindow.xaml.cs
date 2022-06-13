@@ -28,22 +28,21 @@ namespace TinyTODO.App.Windows;
 /// </summary>
 public partial class MainWindow : Window, IDisposable
 {
-    private IConfirmationEmitter _confirmationEmitter = new ConsoleBeepEmitter();
-    private IClipboardDataProvider _clipboardProvider = new WindowsClipboardDataProvider();
-    private IToDoItemStorage _storage = new ToDoItemStorage();
-    private IContextProvider _contextProvider = new WindowsContextProvider();
-    private MainWindowViewModel _viewModel;
+    private readonly IConfirmationEmitter _confirmationEmitter = new ConsoleBeepEmitter();
+    private readonly IClipboardDataProvider _clipboardProvider = new WindowsClipboardDataProvider();
+    private readonly IToDoItemStorage _storage = new ToDoItemStorage();
+    private readonly IContextProvider _contextProvider = new WindowsContextProvider();
+    private readonly MainWindowViewModel _viewModel;
     private bool _isDisposed;
     private readonly TaskbarIcon _taskbarIcon;
 
     public MainWindow()
     {
         InitializeComponent();
-        _viewModel = new MainWindowViewModel();
-        _viewModel.Storage = _storage;
+        _viewModel = new MainWindowViewModel(_storage);
         DataContext = _viewModel;
 
-        HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.StoreClipboardContent, Key.C, ModifierKeys.Shift | ModifierKeys.Alt, (sender, args) => OnHotkey(sender, args));
+        HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.StoreClipboardContent, Key.C, ModifierKeys.Shift | ModifierKeys.Alt, OnHotkeyPressed);
 
         _taskbarIcon = (TaskbarIcon)FindResource("MainTaskbarIcon");
         InitializeTaskbarIcon();
@@ -53,20 +52,42 @@ public partial class MainWindow : Window, IDisposable
     {
         _taskbarIcon.DoubleClickCommand = new ShowWindowCommand(this);
         _taskbarIcon.ContextMenu = new ContextMenu();
-        var closeButton = new MenuItem();
-        closeButton.Command = new ExitApplicationCommand(this);
-        closeButton.Header = "Exit";
+        var closeButton = new MenuItem
+        {
+            Command = new ExitApplicationCommand(this),
+            Header = "Exit"
+        };
         _taskbarIcon.ContextMenu.Items.Add(closeButton);
     }
 
-
-    private void Window_Loaded_1(object sender, RoutedEventArgs e)
+    private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
-        var items = Task.Run(() =>_storage.LoadAllAsync()).Result;
-        foreach (var item in items)
+        await _viewModel.Initialize();
+    }
+
+    private void OnHotkeyPressed(object? sender, object args)
+    {
+        var data = _clipboardProvider.GetData();
+        var context = _contextProvider.GetToDoContext();
+        if (data == null)
         {
-            _viewModel.Items.Insert(0, new DisplayableToDoItem(item));
+            _confirmationEmitter.NoData();
+            return;
         }
+
+        var todoItem = new ToDoItem(data, context);
+
+        _storage.InsertAsync(todoItem);
+        _viewModel.Add(todoItem);
+
+        _confirmationEmitter.Done();
+    }
+
+    private void ShowOptionsMenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        var settings = new SettingsWindow(Settings.Instance);
+        settings.ShowDialog();
+        _viewModel.UpdateSettingBasedProperties();
     }
 
     protected override void OnStateChanged(EventArgs e)
@@ -75,24 +96,6 @@ public partial class MainWindow : Window, IDisposable
             this.Hide();
 
         base.OnStateChanged(e);
-    }
-
-    public void OnHotkey(object? sender, object args)
-    {
-        ClipboardData? data = _clipboardProvider.GetData();
-        ItemCreationContext? context = _contextProvider.GetToDoContext();
-        if (data == null)
-        {
-            _confirmationEmitter.NoData();
-            return;
-        }
-
-        ToDoItem? todoItem = new ToDoItem(data, context);
-
-        _storage.InsertAsync(todoItem);
-        _viewModel.Add(todoItem);
-
-        _confirmationEmitter.Done();
     }
 
     private void Window_Closing(object sender, CancelEventArgs e)
@@ -104,6 +107,7 @@ public partial class MainWindow : Window, IDisposable
         }
     }
 
+    #region Disposable
     protected virtual void Dispose(bool disposing)
     {
         if (!_isDisposed)
@@ -123,10 +127,5 @@ public partial class MainWindow : Window, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private void MenuItem_OnClick(object sender, RoutedEventArgs e)
-    {
-        var settings = new SettingsWindow(Settings.Instance);
-        settings.ShowDialog();
-        _viewModel.UpdateSettingBasedProperties();
-    }
+#endregion
 }

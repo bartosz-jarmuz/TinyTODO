@@ -12,11 +12,11 @@ using TinyTODO.Core.Windows;
 
 namespace TinyTODO.App.Windows.Model
 {
-    public class DisplayableToDoItem : INotifyPropertyChanged
+    public class ToDoItemViewModel : INotifyPropertyChanged
     {
-        private bool isCompleted;
+        private bool _isCompleted;
 
-        public DisplayableToDoItem(ToDoItem item)
+        public ToDoItemViewModel(ToDoItem item)
         {
             Item = item;
 
@@ -40,12 +40,13 @@ namespace TinyTODO.App.Windows.Model
         }
 
         public Guid Id { get; set; }
+
         public bool IsCompleted
         {
-            get => isCompleted; 
+            get => _isCompleted; 
             set
             {
-                isCompleted = value;
+                _isCompleted = value;
                 Item.IsCompleted = value;
                 OnPropertyChanged();
             }
