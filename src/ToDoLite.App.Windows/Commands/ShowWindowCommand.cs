@@ -27,6 +27,8 @@ namespace ToDoLite.App.Windows.Commands
 
         public bool CanExecute(object? parameter) => true;
 
+#pragma warning disable 67
         public event EventHandler? CanExecuteChanged;
+#pragma warning restore 67
     }
 }

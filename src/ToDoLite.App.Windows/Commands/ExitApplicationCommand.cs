@@ -18,8 +18,9 @@ class ExitApplicationCommand : ICommand
         App.Current.Shutdown();
     }
 
-
     public bool CanExecute(object? parameter) => true;
 
+#pragma warning disable 67
     public event EventHandler? CanExecuteChanged;
+#pragma warning restore 67
 }
