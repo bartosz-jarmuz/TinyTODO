@@ -16,11 +16,12 @@ namespace ToDoLite.App.Windows.Converters
                 bool isCompleted = (bool)values[1];
                 return (isCompleted && !showCompleted) ? Visibility.Collapsed : Visibility.Visible;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 #if DEBUG
                 return Visibility.Visible;
 #endif
+                throw;
             }
         }
 
