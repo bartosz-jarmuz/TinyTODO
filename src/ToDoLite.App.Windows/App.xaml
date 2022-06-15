@@ -11,7 +11,7 @@
                 <ResourceDictionary Source="/Resources/ToDoListStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
           <tb:TaskbarIcon x:Key="MainTaskbarIcon"
-            IconSource="pack://application:,,,/ToDoLite.App.Windows;component/icon.ico" 
+            IconSource="pack://application:,,,/ToDoLite;component/icon.ico" 
                           Visibility="Visible"/>
         </ResourceDictionary>
     </Application.Resources>
