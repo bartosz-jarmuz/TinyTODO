@@ -42,7 +42,6 @@ public partial class MainWindow : Window, IDisposable
         _viewModel = new MainWindowViewModel(_storage);
         DataContext = _viewModel;
 
-        HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.StoreClipboardContent, Key.C, ModifierKeys.Shift | ModifierKeys.Alt, OnHotkeyPressed);
 
         _taskbarIcon = (TaskbarIcon)FindResource("MainTaskbarIcon");
         InitializeTaskbarIcon();
@@ -62,6 +61,15 @@ public partial class MainWindow : Window, IDisposable
 
     private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
+        try
+        {
+            HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.StoreClipboardContent, Key.C, ModifierKeys.Shift | ModifierKeys.Alt, OnHotkeyPressed);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Failed to register a hotkey. Perhaps another instance of the app is already running?\r\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+        }
+
         await _viewModel.Initialize();
     }
 
