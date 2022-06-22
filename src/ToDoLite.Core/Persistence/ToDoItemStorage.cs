@@ -20,6 +20,12 @@ namespace ToDoLite.Core
             await _toDoDbContext.SaveChangesAsync();
         }
 
+        public async Task RemoveAsync(ToDoItem item)
+        {
+            _toDoDbContext.ToDoItems.Remove(item);
+            await _toDoDbContext.SaveChangesAsync();
+        }
+
         public async Task<IEnumerable<ToDoItem>> LoadAllAsync()
         {
             return await _toDoDbContext.ToDoItems.ToListAsync();

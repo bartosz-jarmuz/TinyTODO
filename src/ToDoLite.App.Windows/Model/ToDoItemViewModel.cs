@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using ToDoLite.Core;
 using ToDoLite.Core.DataModel;
@@ -36,7 +37,7 @@ namespace ToDoLite.App.Windows.Model
             CompletedDateTime = item.CompletedDateTime;
             IsCompleted = item.IsCompleted;
             Id = item.Id;
-            _ = Update();
+            _ = UpdateTimestamp();
         }
 
         public Guid Id { get; set; }
@@ -64,7 +65,7 @@ namespace ToDoLite.App.Windows.Model
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private async Task Update()
+        private async Task UpdateTimestamp()
         {
             while (true)
             {
@@ -87,8 +88,6 @@ namespace ToDoLite.App.Windows.Model
                 }
             }
         }
-
-        
 
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {

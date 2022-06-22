@@ -7,6 +7,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using ToDoLite.App.Windows.Commands;
 using ToDoLite.App.Windows.Model;
 using ToDoLite.Core;
 using ToDoLite.Core.Contracts;
@@ -22,9 +25,10 @@ namespace ToDoLite.App.Windows.ViewModel
 
         public MainWindowViewModel(IToDoItemStorage toDoItemStorage)
         {
-            this.Storage = toDoItemStorage;
-            this.ToDoItems = new ObservableCollection<ToDoItemViewModel>();
-            this.ToDoItems.CollectionChanged += OnToDoItemsCollectionChange;
+            Storage = toDoItemStorage;
+            ToDoItems = new ObservableCollection<ToDoItemViewModel>();
+            ToDoItems.CollectionChanged += OnToDoItemsCollectionChange;
+            DeleteItemCommand = new AsyncRelayCommand<ToDoItemViewModel>(DeleteItem);
 
         }
 
@@ -55,6 +59,18 @@ namespace ToDoLite.App.Windows.ViewModel
         {
             ToDoItems.Insert(0, new ToDoItemViewModel(todoItem));
         }
+
+        private async Task DeleteItem(ToDoItemViewModel? todoItem)
+        {
+            if (todoItem == null)
+            {
+                return;
+            }
+            ToDoItems.Remove(todoItem);
+            await Storage.RemoveAsync(todoItem.Item);
+        }
+
+        public ICommand DeleteItemCommand { get; set; }
 
         void OnToDoItemsCollectionChange(object? sender, NotifyCollectionChangedEventArgs e)
         {

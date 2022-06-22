@@ -68,6 +68,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="25"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="20"/>
             </Grid.ColumnDefinitions>
             <DockPanel LastChildFill="True" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  >
                     <CheckBox IsChecked="{Binding IsCompleted}" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" VerticalAlignment="Stretch"/>
@@ -84,6 +85,9 @@
                 </StackPanel>
                 <ContentControl HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" Content="{Binding .}" Style="{StaticResource ToDoItemControlSelector}" />
             </DockPanel>
+        <StackPanel Grid.Column="2">
+          <Button Content="🗑" ToolTip="Delete item" CommandParameter="{Binding}" Command="{Binding Path=DataContext.DeleteItemCommand ,RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
+        </StackPanel>
         </Grid>
         </Border>
     </DataTemplate>

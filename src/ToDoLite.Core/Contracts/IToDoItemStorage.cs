@@ -6,6 +6,7 @@ namespace ToDoLite.Core.Contracts
     {
         Task<IEnumerable<ToDoItem>> LoadAllAsync();
         Task InsertAsync(ToDoItem item);
+        Task RemoveAsync(ToDoItem item);
         Task SaveAsync();
     }
 }
