@@ -14,7 +14,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Hardcodet.Wpf.TaskbarNotification;
 using ToDoLite.App.Windows.Commands;
-using ToDoLite.App.Windows.Model;
 using ToDoLite.App.Windows.ViewModel;
 using ToDoLite.Core;
 using ToDoLite.Core.Contracts;

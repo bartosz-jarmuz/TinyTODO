@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using ToDoLite.App.Windows.Commands;
-using ToDoLite.App.Windows.Model;
 using ToDoLite.Core;
 using ToDoLite.Core.Contracts;
 using ToDoLite.Core.DataModel;
