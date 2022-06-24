@@ -68,13 +68,6 @@ public partial class MainWindow : Window, IDisposable
         await _viewModel.Initialize();
     }
 
-    private void ShowOptionsMenuItem_OnClick(object sender, RoutedEventArgs e)
-    {
-        var settings = new SettingsWindow(Settings.Instance);
-        settings.ShowDialog();
-        _viewModel.UpdateSettingBasedProperties();
-    }
-
     protected override void OnStateChanged(EventArgs e)
     {
         if (WindowState == WindowState.Minimized && Settings.Instance.MinimizeToTray)

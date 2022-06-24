@@ -29,6 +29,7 @@ namespace ToDoLite.App.Windows.ViewModel
             ToDoItems = new ObservableCollection<ToDoItemViewModel>();
             ToDoItems.CollectionChanged += OnToDoItemsCollectionChange;
             DeleteItemCommand = new AsyncRelayCommand<ToDoItemViewModel>(DeleteItem);
+            OpenOptionsWindowCommand = new RelayCommand(ShowOptionsWindow);
         }
 
         private readonly IConfirmationEmitter _confirmationEmitter = new ConsoleBeepEmitter();
@@ -69,6 +70,14 @@ namespace ToDoLite.App.Windows.ViewModel
 
         public ICommand DeleteItemCommand { get; set; }
 
+        public ICommand OpenOptionsWindowCommand { get; set; }
+        private void ShowOptionsWindow()
+        {
+            var settings = new SettingsWindow(Settings.Instance);
+            settings.ShowDialog();
+            this.UpdateSettingBasedProperties();
+        }
+
         public void OnHotkeyPressed(object? sender, object args)
         {
             var data = _clipboardProvider.GetData();
@@ -103,7 +112,7 @@ namespace ToDoLite.App.Windows.ViewModel
             await _storage.SaveAsync();
         }
 
-        public void UpdateSettingBasedProperties()
+        private void UpdateSettingBasedProperties()
         {
             OnPropertyChanged(nameof(ShowCompleted));
         }
