@@ -28,7 +28,7 @@
         <Setter Property="ContentTemplate">
           <Setter.Value>
             <DataTemplate DataType="viewModel:ToDoItemViewModel">
-              <xctk:RichTextBox MaxHeight="220" Text="{Binding Path=TextData}"
+              <xctk:RichTextBox MaxHeight="220" Text="{Binding Path=TextData, Mode=OneWay}"
                                               HorizontalAlignment="Left"
                                               BorderThickness="0"
                                               ScrollViewer.VerticalScrollBarVisibility="Auto"

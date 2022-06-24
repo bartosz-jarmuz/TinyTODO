@@ -23,7 +23,11 @@
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" >
           <TextBlock Margin="5">
             <Run Text="{Binding CreatedDateTimeFormatted, Mode=OneWay}" FontWeight="Bold" FontSize="13"/>
-            <Run Text="{Binding TimeDifference, Mode=OneWay}" FontWeight="SemiBold" FontSize="12"/>
+            <Run Text="{Binding TimeDifferenceFromCreated, Mode=OneWay}" FontWeight="SemiBold" FontSize="12"/>
+          </TextBlock>
+          <TextBlock Margin="5">
+            <Run Text="{Binding CompletedDateTimeFormatted, Mode=OneWay}" FontWeight="Regular" FontSize="12"/>
+            <Run Text="{Binding TimeDifferenceFromCompleted, Mode=OneWay}" FontWeight="Regular" FontSize="12"/>
           </TextBlock>
           <TextBlock Text="{Binding ActiveWindowTitle}" Margin="5"/>
         </StackPanel>

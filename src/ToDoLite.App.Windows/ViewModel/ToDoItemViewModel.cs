@@ -3,22 +3,20 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using CommunityToolkit.Mvvm.ComponentModel;
 using ToDoLite.Core;
 using ToDoLite.Core.DataModel;
 using ToDoLite.Core.Windows;
 
 namespace ToDoLite.App.Windows.ViewModel
 {
-    public class ToDoItemViewModel : INotifyPropertyChanged
+    public class ToDoItemViewModel : ObservableObject
     {
-        private bool _isCompleted;
 
         public ToDoItemViewModel(ToDoItem item)
         {
             Item = item;
 
-            PlainTextData = item.PlainTextData;
-            DataType = item.DataType;
             if (DataType == ClipboardDataType.Image)
             {
                 Image = DataConverter.GetImage(item.RawData);
@@ -27,45 +25,47 @@ namespace ToDoLite.App.Windows.ViewModel
             {
                 TextData = DataConverter.GetString(item.RawData);
             }
-
-            ActiveWindowTitle = item.ActiveWindowTitle;
-            CreatedDateTime = item.CreatedDateTime;
-            CompletedDateTime = item.CompletedDateTime;
-            IsCompleted = item.IsCompleted;
-            Id = item.Id;
-            _ = UpdateTimestamp();
+            _ = ConstantlyUpdateTimestamp();
         }
 
-        public Guid Id { get; set; }
-
+        public Guid Id => Item.Id;
         public bool IsCompleted
         {
-            get => _isCompleted; 
+            get => Item.IsCompleted;
             set
             {
-                _isCompleted = value;
-                Item.IsCompleted = value;
-                OnPropertyChanged();
+                if (value)
+                {
+                    CompletedDateTime = DateTime.UtcNow;
+                }
+                SetProperty(Item.IsCompleted, value, Item, (targetObject, newValue) => targetObject.IsCompleted = newValue);
             }
         }
-        public ClipboardDataType DataType { get; set; }
-        public string? ActiveWindowTitle { get; set; }
-        public DateTime CreatedDateTime { get; set; }
+
+        public ClipboardDataType DataType => Item.DataType;
+        public string? ActiveWindowTitle => Item.ActiveWindowTitle;
+        public DateTime CreatedDateTime => Item.CreatedDateTime;
         public string CreatedDateTimeFormatted => $"{CreatedDateTime.ToLocalTime().ToString("dddd, dd MMMM HH:mm")}";
-        public string TimeDifference => $"({DateTimeExtensions.GetTimeDifference(CreatedDateTime)})";
-        public DateTime CompletedDateTime { get; set; }
-        public string? PlainTextData { get; set; }
-        public string? TextData { get; set; }
-        public BitmapImage? Image { get; set; }
+        public string TimeDifferenceFromCreated => $"({DateTimeExtensions.GetTimeDifference(CreatedDateTime)})";
+        
+        public DateTime CompletedDateTime
+        {
+            get => Item.CompletedDateTime;
+            set => SetProperty(Item.CompletedDateTime, value, Item, (targetObject, newValue) => targetObject.CompletedDateTime = newValue);
+        }
+        public string CompletedDateTimeFormatted => $"{CompletedDateTime.ToLocalTime().ToString("dddd, dd MMMM HH:mm")}";
+        public string TimeDifferenceFromCompleted => $"({DateTimeExtensions.GetTimeDifference(CompletedDateTime)})";
+
+        public string? PlainTextData => Item.PlainTextData;
+        public string? TextData { get; }
+        public BitmapImage? Image { get; }
         public ToDoItem Item { get; }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        private async Task UpdateTimestamp()
+        private async Task ConstantlyUpdateTimestamp()
         {
             while (true)
             {
-                OnPropertyChanged(nameof(TimeDifference));
+                OnPropertyChanged(nameof(TimeDifferenceFromCreated));
                 await Task.Delay(CalculateDelay());
             }
             TimeSpan CalculateDelay()
@@ -83,11 +83,6 @@ namespace ToDoLite.App.Windows.ViewModel
                     return TimeSpan.FromHours(1);
                 }
             }
-        }
-
-        protected void OnPropertyChanged([CallerMemberName] string? name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }
