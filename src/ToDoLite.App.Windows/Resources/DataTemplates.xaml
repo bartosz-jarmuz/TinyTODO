@@ -1,0 +1,9 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="clr-namespace:ToDoLite.App.Windows.ViewModel"
+                    xmlns:views="clr-namespace:ToDoLite.App.Windows.Views">
+
+  <DataTemplate x:Key="ToDoItemDataTemplate" DataType="{x:Type vm:ToDoItemViewModel}">
+    <views:ToDoItemView />
+  </DataTemplate>
+</ResourceDictionary>

@@ -9,9 +9,10 @@
         <ResourceDictionary >
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/ToDoListStyle.xaml"/>
+                <ResourceDictionary Source="/Resources/DataTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
           <tb:TaskbarIcon x:Key="MainTaskbarIcon"
-            IconSource="pack://application:,,,/ToDoLite;component/icon.ico" 
+            IconSource="pack://application:,,,/ToDoLite;component/Resources/icon.ico" 
                           Visibility="Visible"/>
         </ResourceDictionary>
     </Application.Resources>
