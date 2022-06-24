@@ -27,10 +27,7 @@ namespace ToDoLite.App.Windows;
 /// </summary>
 public partial class MainWindow : Window, IDisposable
 {
-    private readonly IConfirmationEmitter _confirmationEmitter = new ConsoleBeepEmitter();
-    private readonly IClipboardDataProvider _clipboardProvider = new WindowsClipboardDataProvider();
     private readonly IToDoItemStorage _storage = new ToDoItemStorage();
-    private readonly IContextProvider _contextProvider = new WindowsContextProvider();
     private readonly MainWindowViewModel _viewModel;
     private bool _isDisposed;
     private readonly TaskbarIcon _taskbarIcon;
@@ -40,7 +37,6 @@ public partial class MainWindow : Window, IDisposable
         InitializeComponent();
         _viewModel = new MainWindowViewModel(_storage);
         DataContext = _viewModel;
-
 
         _taskbarIcon = (TaskbarIcon)FindResource("MainTaskbarIcon");
         InitializeTaskbarIcon();
@@ -62,7 +58,7 @@ public partial class MainWindow : Window, IDisposable
     {
         try
         {
-            HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.StoreClipboardContent, Key.C, ModifierKeys.Shift | ModifierKeys.Alt, OnHotkeyPressed);
+            HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.StoreClipboardContent, Key.C, ModifierKeys.Shift | ModifierKeys.Alt, _viewModel.OnHotkeyPressed);
         }
         catch (Exception ex)
         {
@@ -70,24 +66,6 @@ public partial class MainWindow : Window, IDisposable
         }
 
         await _viewModel.Initialize();
-    }
-
-    private void OnHotkeyPressed(object? sender, object args)
-    {
-        var data = _clipboardProvider.GetData();
-        var context = _contextProvider.GetToDoContext();
-        if (data == null)
-        {
-            _confirmationEmitter.NoData();
-            return;
-        }
-
-        var todoItem = new ToDoItem(data, context);
-
-        _storage.InsertAsync(todoItem);
-        _viewModel.Add(todoItem);
-
-        _confirmationEmitter.Done();
     }
 
     private void ShowOptionsMenuItem_OnClick(object sender, RoutedEventArgs e)

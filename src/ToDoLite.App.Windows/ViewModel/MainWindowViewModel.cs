@@ -13,6 +13,7 @@ using ToDoLite.App.Windows.Commands;
 using ToDoLite.Core;
 using ToDoLite.Core.Contracts;
 using ToDoLite.Core.DataModel;
+using ToDoLite.Core.Windows;
 
 namespace ToDoLite.App.Windows.ViewModel
 {
@@ -24,14 +25,16 @@ namespace ToDoLite.App.Windows.ViewModel
 
         public MainWindowViewModel(IToDoItemStorage toDoItemStorage)
         {
-            Storage = toDoItemStorage;
+            _storage = toDoItemStorage;
             ToDoItems = new ObservableCollection<ToDoItemViewModel>();
             ToDoItems.CollectionChanged += OnToDoItemsCollectionChange;
             DeleteItemCommand = new AsyncRelayCommand<ToDoItemViewModel>(DeleteItem);
-
         }
 
-        private IToDoItemStorage Storage { get; }
+        private readonly IConfirmationEmitter _confirmationEmitter = new ConsoleBeepEmitter();
+        private readonly IClipboardDataProvider _clipboardProvider = new WindowsClipboardDataProvider();
+        private readonly IContextProvider _contextProvider = new WindowsContextProvider();
+        private readonly IToDoItemStorage _storage;
 
         public bool ShowCompleted
         {
@@ -47,16 +50,11 @@ namespace ToDoLite.App.Windows.ViewModel
 
         public async Task Initialize()
         {
-            var items = await Storage.LoadAllAsync();
+            var items = await _storage.LoadAllAsync();
             foreach (var item in items)
             {
                 ToDoItems.Insert(0, new ToDoItemViewModel(item));
             }
-        }
-
-        public void Add(ToDoItem todoItem)
-        {
-            ToDoItems.Insert(0, new ToDoItemViewModel(todoItem));
         }
 
         private async Task DeleteItem(ToDoItemViewModel? todoItem)
@@ -66,10 +64,28 @@ namespace ToDoLite.App.Windows.ViewModel
                 return;
             }
             ToDoItems.Remove(todoItem);
-            await Storage.RemoveAsync(todoItem.Item);
+            await _storage.RemoveAsync(todoItem.Item);
         }
 
         public ICommand DeleteItemCommand { get; set; }
+
+        public void OnHotkeyPressed(object? sender, object args)
+        {
+            var data = _clipboardProvider.GetData();
+            var context = _contextProvider.GetToDoContext();
+            if (data == null)
+            {
+                _confirmationEmitter.NoData();
+                return;
+            }
+
+            var todoItem = new ToDoItem(data, context);
+
+            _storage.InsertAsync(todoItem);
+            ToDoItems.Insert(0, new ToDoItemViewModel(todoItem));
+
+            _confirmationEmitter.Done();
+        }
 
         void OnToDoItemsCollectionChange(object? sender, NotifyCollectionChangedEventArgs e)
         {
@@ -84,7 +100,7 @@ namespace ToDoLite.App.Windows.ViewModel
 
         async Task OnToDoItemPropertyChanged(object? sender, PropertyChangedEventArgs? e)
         {
-            await Storage.SaveAsync();
+            await _storage.SaveAsync();
         }
 
         public void UpdateSettingBasedProperties()
