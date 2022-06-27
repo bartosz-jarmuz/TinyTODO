@@ -1,41 +1,38 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using ToDoLite.App.Windows.Commands;
-using ToDoLite.Core;
 using ToDoLite.Core.Contracts;
-using ToDoLite.Core.DataModel;
-using ToDoLite.Core.Windows;
+using Settings = ToDoLite.Core.Persistence.Settings;
 
 namespace ToDoLite.App.Windows.ViewModel
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     {
 #pragma warning disable CS8618
         public MainWindowViewModel(){}
 #pragma warning restore CS8618
 
-        public MainWindowViewModel(IToDoItemStorage toDoItemStorage)
+        public MainWindowViewModel(IToDoItemStorage toDoItemStorage, IToDoItemGenerator toDoItemGenerator, IConfirmationEmitter confirmationEmitter)
         {
             _storage = toDoItemStorage;
+            _toDoItemGenerator = toDoItemGenerator;
+            _confirmationEmitter = confirmationEmitter;
             ToDoItems = new ObservableCollection<ToDoItemViewModel>();
             ToDoItems.CollectionChanged += OnToDoItemsCollectionChange;
             DeleteItemCommand = new AsyncRelayCommand<ToDoItemViewModel>(DeleteItem);
             OpenOptionsWindowCommand = new RelayCommand(ShowOptionsWindow);
         }
 
-        private readonly IConfirmationEmitter _confirmationEmitter = new ConsoleBeepEmitter();
-        private readonly IClipboardDataProvider _clipboardProvider = new WindowsClipboardDataProvider();
-        private readonly IContextProvider _contextProvider = new WindowsContextProvider();
+        private readonly IConfirmationEmitter _confirmationEmitter;
+        private readonly IToDoItemGenerator _toDoItemGenerator;
+
         private readonly IToDoItemStorage _storage;
+        private bool _isDisposed;
 
         public bool ShowCompleted
         {
@@ -78,21 +75,17 @@ namespace ToDoLite.App.Windows.ViewModel
             this.UpdateSettingBasedProperties();
         }
 
-        public void OnHotkeyPressed(object? sender, object args)
+        public void CreateToDoItemFromClipboardContent(object? sender, object args)
         {
-            var data = _clipboardProvider.GetData();
-            var context = _contextProvider.GetToDoContext();
-            if (data == null)
+            var todoItem = _toDoItemGenerator.GenerateItem();
+            if (todoItem == null)
             {
                 _confirmationEmitter.NoData();
                 return;
             }
 
-            var todoItem = new ToDoItem(data, context);
-
             _storage.InsertAsync(todoItem);
             ToDoItems.Insert(0, new ToDoItemViewModel(todoItem));
-
             _confirmationEmitter.Done();
         }
 
@@ -117,12 +110,33 @@ namespace ToDoLite.App.Windows.ViewModel
             OnPropertyChanged(nameof(ShowCompleted));
         }
 
-#region PropertyChanged
+        #region PropertyChanged
         public event PropertyChangedEventHandler? PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string? name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
-#endregion
+        #endregion
+
+        #region Disposable
+        private void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    _storage.Dispose();
+                }
+                _isDisposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 }

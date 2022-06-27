@@ -12,8 +12,8 @@
     <Setter Property="BorderThickness" Value="0"/>
   </Style>
 
-
-  <Style TargetType="{x:Type ContentControl}" x:Key="ToDoItemControlSelector" >
+ 
+  <Style TargetType="{x:Type ContentControl}" x:Key="ToDoItemControlSelector"> 
     <Style.Triggers>
       <DataTrigger Binding="{Binding Path=DataType}" Value="0" >
         <Setter Property="ContentTemplate">

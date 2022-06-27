@@ -13,12 +13,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Hardcodet.Wpf.TaskbarNotification;
+using Microsoft.Extensions.DependencyInjection;
 using ToDoLite.App.Windows.Commands;
 using ToDoLite.App.Windows.ViewModel;
 using ToDoLite.Core;
 using ToDoLite.Core.Contracts;
 using ToDoLite.Core.DataModel;
+using ToDoLite.Core.Persistence;
 using ToDoLite.Core.Windows;
+using Settings = ToDoLite.Core.Persistence.Settings;
 
 namespace ToDoLite.App.Windows;
 
@@ -27,7 +30,6 @@ namespace ToDoLite.App.Windows;
 /// </summary>
 public partial class MainWindow : Window, IDisposable
 {
-    private readonly IToDoItemStorage _storage = new ToDoItemStorage();
     private readonly MainWindowViewModel _viewModel;
     private bool _isDisposed;
 
@@ -35,7 +37,7 @@ public partial class MainWindow : Window, IDisposable
     {
         InitializeComponent();
         InitializeTaskbarIcon();
-        _viewModel = new MainWindowViewModel(_storage);
+        _viewModel = App.Current.Services.GetService<MainWindowViewModel>()!;
         DataContext = _viewModel;
     }
 
@@ -43,7 +45,7 @@ public partial class MainWindow : Window, IDisposable
     {
         try
         {
-            HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.StoreClipboardContent, Key.C, ModifierKeys.Shift | ModifierKeys.Alt, _viewModel.OnHotkeyPressed);
+            HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.StoreClipboardContent, Key.C, ModifierKeys.Shift | ModifierKeys.Alt, _viewModel.CreateToDoItemFromClipboardContent);
         }
         catch (Exception ex)
         {
@@ -77,7 +79,7 @@ public partial class MainWindow : Window, IDisposable
         {
             if (disposing)
             {
-                _storage.Dispose();
+                _viewModel.Dispose();
                 _taskbarIcon.Dispose();
             }
             _isDisposed = true;

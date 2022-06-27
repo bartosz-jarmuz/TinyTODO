@@ -1,23 +1,19 @@
 ﻿using System.ComponentModel;
-using Microsoft.EntityFrameworkCore;
-using ToDoLite.Core.Contracts;
 
-namespace ToDoLite.Core
+namespace ToDoLite.Core.Persistence
 {
     public partial class Settings : ISettings
     {
         private Settings()
         {
-            _dbContext = new ToDoLiteDbContext();
-            _dataAccess = new DataAccess(_dbContext);
+            var dbContext = new ToDoLiteDbContext();
+            _dataAccess = new DataAccess(dbContext);
             
         }
 
-        private readonly ToDoLiteDbContext _dbContext;
-        private bool disposedValue;
-        private DataAccess _dataAccess;
-        private static readonly Lazy<ISettings> lazy = new Lazy<ISettings>(() => new Settings());
-        public static ISettings Instance { get { return lazy.Value; } }
+        private readonly DataAccess _dataAccess;
+        private static readonly Lazy<ISettings> _lazy = new(() => new Settings());
+        public static ISettings Instance => _lazy.Value;
 
         [Description("Set to true to see completed tasks on the list.")]
         public bool ShowCompleted { get => _dataAccess.Get<bool>(Keys.ShowCompleted, false); set => _dataAccess.Set(Keys.ShowCompleted, value); }
@@ -34,26 +30,5 @@ namespace ToDoLite.Core
             public const string CloseToTray = "CloseToTray";
             public const string MinimizeToTray = "MinimizeToTray";
         }
-
-        #region IDisposable
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    _dbContext?.Dispose();
-                }
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

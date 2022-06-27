@@ -1,6 +1,6 @@
 ﻿using ToDoLite.Core.DataModel;
 
-namespace ToDoLite.Core
+namespace ToDoLite.Core.Persistence
 {
     public partial class Settings
     {
@@ -27,21 +27,16 @@ namespace ToDoLite.Core
                     _dbContext.SaveChanges();
                     return defaultValue;
                 }
-                switch (Type.GetTypeCode(typeof(T)))
+
+                return Type.GetTypeCode(typeof(T)) switch
                 {
-                    case TypeCode.Boolean:
-                        return ValueOrDefault(setting.ValueBoolean);
-                    case TypeCode.Double:
-                        return ValueOrDefault(setting.ValueDouble);
-                    case TypeCode.Int32:
-                        return ValueOrDefault(setting.ValueInteger);
-                    case TypeCode.DateTime:
-                        return ValueOrDefault(setting.ValueDateTime);
-                    case TypeCode.String:
-                        return ValueOrDefault(setting.ValueString??"");
-                    default:
-                        throw new ArgumentOutOfRangeException($"{typeof(T)} is not supported as setting.");
-                }
+                    TypeCode.Boolean => ValueOrDefault(setting.ValueBoolean),
+                    TypeCode.Double => ValueOrDefault(setting.ValueDouble),
+                    TypeCode.Int32 => ValueOrDefault(setting.ValueInteger),
+                    TypeCode.DateTime => ValueOrDefault(setting.ValueDateTime),
+                    TypeCode.String => ValueOrDefault(setting.ValueString ?? ""),
+                    _ => throw new ArgumentOutOfRangeException($"{typeof(T)} is not supported as setting.")
+                };
 
                 T ValueOrDefault(object? value)
                 {

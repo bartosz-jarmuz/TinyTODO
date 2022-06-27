@@ -2,14 +2,14 @@
 using ToDoLite.Core.Contracts;
 using ToDoLite.Core.DataModel;
 
-namespace ToDoLite.Core
+namespace ToDoLite.Core.Persistence
 {
-    public class ToDoItemStorage : IToDoItemStorage
+    public sealed class SqliteToDoItemStorage : IToDoItemStorage
     {
         private readonly ToDoLiteDbContext _toDoDbContext;
-        private bool disposedValue;
+        private bool _isDisposed;
 
-        public ToDoItemStorage()
+        public SqliteToDoItemStorage()
         {
             _toDoDbContext = new ToDoLiteDbContext();
         }
@@ -36,15 +36,15 @@ namespace ToDoLite.Core
             await _toDoDbContext.SaveChangesAsync();
         }
 
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_isDisposed)
             {
                 if (disposing)
                 {
                     _toDoDbContext?.Dispose();
                 }
-                disposedValue = true;
+                _isDisposed = true;
             }
         }
 

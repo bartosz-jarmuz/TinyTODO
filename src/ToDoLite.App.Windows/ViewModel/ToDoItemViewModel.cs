@@ -38,7 +38,7 @@ namespace ToDoLite.App.Windows.ViewModel
         }
 
         public string? ActiveWindowTitle => Item.ActiveWindowTitle;
-        public string CreatedDateTimeFormatted => $"{Item.CreatedDateTime.ToLocalTime().ToString("dddd, dd MMMM HH:mm")}";
+        public string CreatedDateTimeFormatted => $"{Item.CreatedDateTime.ToLocalTime():dddd, dd MMMM HH:mm}";
         public string TimeDifferenceFromCreated => $"({DateTimeExtensions.GetTimeDifference(Item.CreatedDateTime)})";
         
         private DateTime CompletedDateTime
@@ -52,7 +52,9 @@ namespace ToDoLite.App.Windows.ViewModel
             }
         }
 
-        public string CompletedDateTimeFormatted => $"{ Item.CompletedDateTime.ToLocalTime().ToString("dddd, dd MMMM HH:mm")}";
+        public ClipboardDataType DataType => Item.DataType;
+
+        public string CompletedDateTimeFormatted => $"{ Item.CompletedDateTime.ToLocalTime():dddd, dd MMMM HH:mm}";
         public string TimeDifferenceFromCompleted => $"({DateTimeExtensions.GetTimeDifference(Item.CompletedDateTime)})";
 
         public string? PlainTextData => Item.PlainTextData;
