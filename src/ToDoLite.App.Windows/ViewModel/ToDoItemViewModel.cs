@@ -12,12 +12,11 @@ namespace ToDoLite.App.Windows.ViewModel
 {
     public class ToDoItemViewModel : ObservableObject
     {
-
         public ToDoItemViewModel(ToDoItem item)
         {
             Item = item;
 
-            if (DataType == ClipboardDataType.Image)
+            if (Item.DataType == ClipboardDataType.Image)
             {
                 Image = DataConverter.GetImage(item.RawData);
             }
@@ -25,43 +24,43 @@ namespace ToDoLite.App.Windows.ViewModel
             {
                 TextData = DataConverter.GetString(item.RawData);
             }
-            _ = ConstantlyUpdateTimestamp();
+            _ = StartTimestampUpdateLoop();
         }
 
-        public Guid Id => Item.Id;
         public bool IsCompleted
         {
             get => Item.IsCompleted;
             set
             {
-                if (value)
-                {
-                    CompletedDateTime = DateTime.UtcNow;
-                }
+                CompletedDateTime = value ? DateTime.UtcNow : DateTime.MinValue;
                 SetProperty(Item.IsCompleted, value, Item, (targetObject, newValue) => targetObject.IsCompleted = newValue);
             }
         }
 
-        public ClipboardDataType DataType => Item.DataType;
         public string? ActiveWindowTitle => Item.ActiveWindowTitle;
-        public DateTime CreatedDateTime => Item.CreatedDateTime;
-        public string CreatedDateTimeFormatted => $"{CreatedDateTime.ToLocalTime().ToString("dddd, dd MMMM HH:mm")}";
-        public string TimeDifferenceFromCreated => $"({DateTimeExtensions.GetTimeDifference(CreatedDateTime)})";
+        public string CreatedDateTimeFormatted => $"{Item.CreatedDateTime.ToLocalTime().ToString("dddd, dd MMMM HH:mm")}";
+        public string TimeDifferenceFromCreated => $"({DateTimeExtensions.GetTimeDifference(Item.CreatedDateTime)})";
         
-        public DateTime CompletedDateTime
+        private DateTime CompletedDateTime
         {
             get => Item.CompletedDateTime;
-            set => SetProperty(Item.CompletedDateTime, value, Item, (targetObject, newValue) => targetObject.CompletedDateTime = newValue);
+            set
+            {
+                SetProperty(Item.CompletedDateTime, value, Item, (targetObject, newValue) => targetObject.CompletedDateTime = newValue);
+                OnPropertyChanged(nameof(TimeDifferenceFromCompleted));
+                OnPropertyChanged(nameof(CompletedDateTimeFormatted));
+            }
         }
-        public string CompletedDateTimeFormatted => $"{CompletedDateTime.ToLocalTime().ToString("dddd, dd MMMM HH:mm")}";
-        public string TimeDifferenceFromCompleted => $"({DateTimeExtensions.GetTimeDifference(CompletedDateTime)})";
+
+        public string CompletedDateTimeFormatted => $"{ Item.CompletedDateTime.ToLocalTime().ToString("dddd, dd MMMM HH:mm")}";
+        public string TimeDifferenceFromCompleted => $"({DateTimeExtensions.GetTimeDifference(Item.CompletedDateTime)})";
 
         public string? PlainTextData => Item.PlainTextData;
         public string? TextData { get; }
         public BitmapImage? Image { get; }
         public ToDoItem Item { get; }
 
-        private async Task ConstantlyUpdateTimestamp()
+        private async Task StartTimestampUpdateLoop()
         {
             while (true)
             {
@@ -70,7 +69,7 @@ namespace ToDoLite.App.Windows.ViewModel
             }
             TimeSpan CalculateDelay()
             {
-                var diff = DateTime.UtcNow - CreatedDateTime;
+                var diff = DateTime.UtcNow - Item.CreatedDateTime;
                 if (diff <= TimeSpan.FromSeconds(90))
                 {
                     return TimeSpan.FromSeconds(1);
