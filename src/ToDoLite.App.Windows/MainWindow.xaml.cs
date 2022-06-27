@@ -30,28 +30,13 @@ public partial class MainWindow : Window, IDisposable
     private readonly IToDoItemStorage _storage = new ToDoItemStorage();
     private readonly MainWindowViewModel _viewModel;
     private bool _isDisposed;
-    private readonly TaskbarIcon _taskbarIcon;
 
     public MainWindow()
     {
         InitializeComponent();
+        InitializeTaskbarIcon();
         _viewModel = new MainWindowViewModel(_storage);
         DataContext = _viewModel;
-
-        _taskbarIcon = (TaskbarIcon)FindResource("MainTaskbarIcon");
-        InitializeTaskbarIcon();
-    }
-
-    private void InitializeTaskbarIcon()
-    {
-        _taskbarIcon.DoubleClickCommand = new ShowWindowCommand(this);
-        _taskbarIcon.ContextMenu = new ContextMenu();
-        var closeButton = new MenuItem
-        {
-            Command = new ExitApplicationCommand(this),
-            Header = "Exit"
-        };
-        _taskbarIcon.ContextMenu.Items.Add(closeButton);
     }
 
     private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
