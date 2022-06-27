@@ -5,13 +5,14 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ToDoLite.Core.Contracts;
 using Settings = ToDoLite.Core.Persistence.Settings;
 
 namespace ToDoLite.App.Windows.ViewModel
 {
-    public class MainWindowViewModel : INotifyPropertyChanged, IDisposable
+    public class MainWindowViewModel : ObservableObject, IDisposable
     {
 #pragma warning disable CS8618
         public MainWindowViewModel(){}
@@ -84,7 +85,7 @@ namespace ToDoLite.App.Windows.ViewModel
                 return;
             }
 
-            _storage.InsertAsync(todoItem);
+            Task.Run(()=>_storage.InsertAsync(todoItem));
             ToDoItems.Insert(0, new ToDoItemViewModel(todoItem));
             _confirmationEmitter.Done();
         }
@@ -109,14 +110,6 @@ namespace ToDoLite.App.Windows.ViewModel
         {
             OnPropertyChanged(nameof(ShowCompleted));
         }
-
-        #region PropertyChanged
-        public event PropertyChangedEventHandler? PropertyChanged;
-        private void OnPropertyChanged([CallerMemberName] string? name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-        #endregion
 
         #region Disposable
         private void Dispose(bool disposing)
