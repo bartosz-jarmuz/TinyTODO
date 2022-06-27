@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToDoLite.Core.DataModel
+﻿namespace ToDoLite.Core.DataModel
 {
     public record ItemCreationContext
     {

@@ -3,7 +3,7 @@ using System.Text;
 using ToDoLite.Core.Contracts;
 using ToDoLite.Core.DataModel;
 
-namespace ToDoLite.Core;
+namespace ToDoLite.Core.Windows;
 
 public class WindowsContextProvider : IContextProvider
 {

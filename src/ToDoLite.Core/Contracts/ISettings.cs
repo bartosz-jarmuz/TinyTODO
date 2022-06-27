@@ -1,4 +1,4 @@
-﻿namespace ToDoLite.Core
+﻿namespace ToDoLite.Core.Contracts
 {
     public interface ISettings
     {

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using ToDoLite.Core;
+using ToDoLite.Core.Contracts;
 
 namespace ToDoLite.App.Windows
 {

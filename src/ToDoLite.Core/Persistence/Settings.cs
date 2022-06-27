@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using ToDoLite.Core.Contracts;
 
 namespace ToDoLite.Core.Persistence
 {

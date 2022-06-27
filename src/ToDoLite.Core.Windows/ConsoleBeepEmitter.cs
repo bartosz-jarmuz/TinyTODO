@@ -1,5 +1,4 @@
-﻿using System;
-using ToDoLite.Core.Contracts;
+﻿using ToDoLite.Core.Contracts;
 
 namespace ToDoLite.Core.Windows;
 

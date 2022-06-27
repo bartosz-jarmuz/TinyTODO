@@ -1,15 +1,14 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
-using System.Reflection;
 using ToDoLite.Core.DataModel;
 
-namespace ToDoLite.Core
+namespace ToDoLite.Core.Persistence
 {
     public class ToDoLiteDbContext : DbContext 
     {
+#pragma warning disable CS8618
         public ToDoLiteDbContext()
+#pragma warning restore CS8618
         {
             Database.EnsureCreated();
         }
