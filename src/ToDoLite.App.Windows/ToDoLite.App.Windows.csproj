@@ -20,6 +20,7 @@
       <NoWarn>NU1701</NoWarn>
     </PackageReference>
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
     <PackageReference Include="NHotkey.Wpf" Version="2.1.0" />
   </ItemGroup>
 

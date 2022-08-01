@@ -11,19 +11,19 @@ public class ToDoItem
 
     public ToDoItem(ClipboardData data, ItemCreationContext context)
     {
-        this.PlainTextData = data.PlainText;
+        this.PlainText = data.PlainText;
         this.RawData = data.RawData;
-        this.DataType = data.DataType;
+        this.CapturedDataType = data.DataType;
         this.ActiveWindowTitle = context.ActiveWindowTitle;
         this.CreatedDateTime = context.TimeStamp;
     }
 
     public Guid Id { get; set; }
     public bool IsCompleted { get; set; }
-    public ClipboardDataType DataType { get; set; }
+    public ClipboardDataType CapturedDataType { get; set; }
     public string? ActiveWindowTitle { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public DateTime CompletedDateTime { get; set; }
-    public string? PlainTextData { get; set; }
+    public string? PlainText { get; set; }
     public byte[] RawData { get; set; }
 }

@@ -3,7 +3,8 @@
                     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                     xmlns:converters="clr-namespace:ToDoLite.App.Windows.Converters"
                      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-                     xmlns:viewModel="clr-namespace:ToDoLite.App.Windows.ViewModel">
+                     xmlns:viewModel="clr-namespace:ToDoLite.App.Windows.ViewModel"
+                     xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
   <converters:WidthMinusConverter x:Key="WidthMinusConverter"/>
   <converters:ToDoItemVisibilityConverter x:Key="ToDoItemVisibilityConverter" />
 
@@ -19,7 +20,7 @@
         <Setter Property="ContentTemplate">
           <Setter.Value>
             <DataTemplate DataType="viewModel:ToDoItemViewModel">
-              <TextBox Text="{Binding Path=PlainTextData}" BorderThickness="0"/>
+              <TextBox Text="{Binding Path=TextData}" AcceptsReturn="True" BorderThickness="0"/>
             </DataTemplate>
           </Setter.Value>
         </Setter>
@@ -36,6 +37,11 @@
                 <xctk:RichTextBox.TextFormatter>
                   <xctk:RtfFormatter />
                 </xctk:RichTextBox.TextFormatter>
+                <b:Interaction.Triggers>
+                  <b:EventTrigger EventName="GotFocus" >
+                    <b:InvokeCommandAction Command="{Binding  Path=SetEditModeCommand}"/>
+                  </b:EventTrigger>
+                </b:Interaction.Triggers>
               </xctk:RichTextBox>
             </DataTemplate>
           </Setter.Value>
@@ -45,7 +51,7 @@
         <Setter Property="ContentTemplate">
           <Setter.Value>
             <DataTemplate DataType="viewModel:ToDoItemViewModel">
-              <TextBox  Text="{Binding Path=PlainTextData}" BorderThickness="0"/>
+              <TextBox  Text="{Binding Path=TextData}" AcceptsReturn="True" AcceptsTab="True" BorderThickness="0"/>
             </DataTemplate>
           </Setter.Value>
         </Setter>
@@ -70,6 +76,7 @@
       </DataTrigger>
     </Style.Triggers>
     <Setter Property="Focusable" Value="False"/>
+    <Setter Property="Padding" Value="0" />
     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
     <Setter Property="Visibility">
       <Setter.Value>

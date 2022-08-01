@@ -22,8 +22,10 @@
         </Menu>
         <ListBox ItemsSource="{Binding ToDoItems}" 
                  AlternationCount="2"
+                 ScrollViewer.CanContentScroll="False"
                  Style="{StaticResource ToDoListStyle}"
                  ItemContainerStyle="{StaticResource ToDoListItemStyle}" 
-                 ItemTemplate="{StaticResource ToDoItemDataTemplate}"/>
+                 ItemTemplate="{StaticResource ToDoItemDataTemplate}">
+    </ListBox>
     </DockPanel>
 </Window>
