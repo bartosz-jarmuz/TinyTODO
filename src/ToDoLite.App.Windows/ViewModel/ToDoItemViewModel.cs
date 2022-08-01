@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -15,6 +17,7 @@ namespace ToDoLite.App.Windows.ViewModel
     {
         private bool _isEditMode;
         private Brush _backColor;
+        private Point? _lastMouseButtonDownLocation;
 
         public ToDoItemViewModel(ToDoItem item)
         {
@@ -35,6 +38,14 @@ namespace ToDoLite.App.Windows.ViewModel
 
             _ = StartTimestampUpdateLoop();
             SetEditModeCommand = new RelayCommand(() => this.IsEditMode = !this.IsEditMode);
+            HandleMouseLeftButtonDownOnImage = new RelayCommand<MouseButtonEventArgs>(StoreMousePositionAtMouseDown);
+            HandleMouseLeftButtonUpOnImage = new RelayCommand<MouseButtonEventArgs>(OpenFullSizeImageInWindow);
+        }
+
+        private void StoreMousePositionAtMouseDown(MouseButtonEventArgs? e)
+        {
+            //to allow dragging the image in preview without opening the full size
+            _lastMouseButtonDownLocation = GetMousePositionRelativeToImageBorder(e);
         }
 
         public bool IsCompleted
@@ -90,6 +101,28 @@ namespace ToDoLite.App.Windows.ViewModel
         }
 
         public ICommand SetEditModeCommand { get; set; }
+        public ICommand HandleMouseLeftButtonUpOnImage { get; set; }
+        public ICommand HandleMouseLeftButtonDownOnImage { get; set; }
+
+        private void OpenFullSizeImageInWindow(MouseButtonEventArgs? e)
+        {
+            if (e != null)
+            {
+                if (_lastMouseButtonDownLocation == GetMousePositionRelativeToImageBorder(e))
+                {
+                    var window = new FullSizePreviewWindow
+                    {
+                        DataContext = new FullSizePreviewWindowViewModel(this)
+                    };
+                    window.Show();
+                }
+            }
+        }
+
+        private static Point GetMousePositionRelativeToImageBorder(MouseButtonEventArgs e)
+        {
+            return e.GetPosition((e.Source as Image)?.Parent as UIElement);
+        }
 
         public Brush BackColor
         {

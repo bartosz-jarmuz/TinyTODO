@@ -60,7 +60,19 @@
         <Setter Property="ContentTemplate">
           <Setter.Value>
             <DataTemplate DataType="viewModel:ToDoItemViewModel">
-              <Image HorizontalAlignment="Left" Source="{Binding Image}" MaxHeight="220" />
+              <converters:ZoomBorder ClipToBounds="True">
+                <Image HorizontalAlignment="Left" Source="{Binding Image}" MaxHeight="220" Cursor="Hand" ToolTip="Scroll and drag to zoom.&#x0a;Click to open full size preview.&#x0a;Right-click to reset zoom and view.">
+                  <b:Interaction.Triggers>
+                    <b:EventTrigger EventName="MouseLeftButtonDown" >
+                      <b:InvokeCommandAction Command="{Binding  Path=HandleMouseLeftButtonDownOnImage}" PassEventArgsToCommand="True"/>
+                    </b:EventTrigger>
+                    <b:EventTrigger EventName="MouseLeftButtonUp" >
+                      <b:InvokeCommandAction Command="{Binding  Path=HandleMouseLeftButtonUpOnImage}" PassEventArgsToCommand="True"/>
+                    </b:EventTrigger>
+                  </b:Interaction.Triggers>
+                </Image>
+              </converters:ZoomBorder>
+              
             </DataTemplate>
           </Setter.Value>
         </Setter>

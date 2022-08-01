@@ -1,0 +1,22 @@
+﻿<Window x:Class="ToDoLite.App.Windows.FullSizePreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ToDoLite.App.Windows"
+        xmlns:vm="clr-namespace:ToDoLite.App.Windows.ViewModel"
+        xmlns:converters="clr-namespace:ToDoLite.App.Windows.Converters"
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+        mc:Ignorable="d"
+        Title="{Binding Title}" Height="450" Width="800">
+  <Window.DataContext>
+    <vm:FullSizePreviewWindowViewModel/>
+  </Window.DataContext>
+  <DockPanel LastChildFill="True">
+
+    <converters:ZoomBorder ClipToBounds="True" Background="Gray" Margin="2"  DockPanel.Dock="Bottom">
+    <Image HorizontalAlignment="Center" Source="{Binding Image}" MouseDown="Image_OnMouseDown"/>
+  </converters:ZoomBorder>
+  </DockPanel>
+
+</Window>
