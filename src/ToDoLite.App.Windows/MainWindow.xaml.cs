@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
+using NHotkey;
 using ToDoLite.App.Windows.ViewModel;
 using ToDoLite.Core;
 using Settings = ToDoLite.Core.Persistence.Settings;
@@ -31,6 +32,7 @@ public partial class MainWindow : Window, IDisposable
         try
         {
             HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.StoreClipboardContent, Key.C, ModifierKeys.Shift | ModifierKeys.Alt, _viewModel.CreateToDoItemFromClipboardContent);
+            HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.ShowWindow, Key.T, ModifierKeys.Shift | ModifierKeys.Alt, RestoreWindow);
         }
         catch (Exception ex)
         {
@@ -55,6 +57,11 @@ public partial class MainWindow : Window, IDisposable
             e.Cancel = true;
             this.Hide();
         }
+    }
+
+    private void RestoreWindow(object? sender, HotkeyEventArgs args)
+    {
+        this.Show();
     }
 
     #region Disposable
