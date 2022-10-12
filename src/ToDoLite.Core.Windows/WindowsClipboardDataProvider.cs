@@ -15,6 +15,7 @@ public class WindowsClipboardDataProvider : IClipboardDataProvider
             return null;
         }
         var plainText = Clipboard.GetText();
+        plainText = DataConverter.ConvertToRtf(plainText);
         if (dataObject.GetDataPresent(DataFormats.Html))
         {
             var data = dataObject.GetData(DataFormats.Html);
@@ -39,7 +40,7 @@ public class WindowsClipboardDataProvider : IClipboardDataProvider
         }
         else if (Clipboard.ContainsText())
         {
-            return new ClipboardData(ClipboardDataType.PlainText, plainText, DataConverter.GetBytes(Clipboard.GetText()));
+            return new ClipboardData(ClipboardDataType.PlainText, plainText, DataConverter.GetBytes(plainText));
         }
         else
         {

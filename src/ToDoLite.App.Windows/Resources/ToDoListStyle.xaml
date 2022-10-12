@@ -17,56 +17,13 @@
   <Style TargetType="{x:Type ContentControl}" x:Key="ToDoItemControlSelector"> 
     <Style.Triggers>
       <DataTrigger Binding="{Binding Path=Item.CapturedDataType}" Value="0" > <!--plain text -->
-        <Setter Property="ContentTemplate">
-          <Setter.Value>
-            <DataTemplate DataType="viewModel:ToDoItemViewModel">
-              <TextBox Text="{Binding Path=TextData}" AcceptsReturn="True" BorderThickness="0">
-                <b:Interaction.Triggers>
-                  <b:EventTrigger EventName="GotFocus" >
-                    <b:InvokeCommandAction Command="{Binding  Path=SetEditModeCommand}"/>
-                  </b:EventTrigger>
-                </b:Interaction.Triggers>
-              </TextBox>
-            </DataTemplate>
-          </Setter.Value>
-        </Setter>
+        <Setter Property="ContentTemplate"  Value="{DynamicResource ToDoItemTextEditorDataTemplate}"/>
       </DataTrigger>
-      <DataTrigger Binding="{Binding Path=Item.CapturedDataType}" Value="1"> <!--Rich text -->
-        <Setter Property="ContentTemplate">
-          <Setter.Value>
-            <DataTemplate DataType="viewModel:ToDoItemViewModel">
-              <xctk:RichTextBox MaxHeight="220" Text="{Binding Path=TextData, Mode=TwoWay}"
-                                              HorizontalAlignment="Left"
-                                              BorderThickness="0"
-                                              ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Auto">
-                <xctk:RichTextBox.TextFormatter>
-                  <xctk:RtfFormatter />
-                </xctk:RichTextBox.TextFormatter>
-                <b:Interaction.Triggers>
-                  <b:EventTrigger EventName="GotFocus" >
-                    <b:InvokeCommandAction Command="{Binding  Path=SetEditModeCommand}"/>
-                  </b:EventTrigger>
-                </b:Interaction.Triggers>
-              </xctk:RichTextBox>
-            </DataTemplate>
-          </Setter.Value>
-        </Setter>
+      <DataTrigger Binding="{Binding Path=Item.CapturedDataType}" Value="1" > <!--Rich text -->
+        <Setter Property="ContentTemplate"  Value="{DynamicResource ToDoItemTextEditorDataTemplate}"/>
       </DataTrigger>
       <DataTrigger Binding="{Binding Path=Item.CapturedDataType}" Value="2"> <!-- html-->
-        <Setter Property="ContentTemplate">
-          <Setter.Value>
-            <DataTemplate DataType="viewModel:ToDoItemViewModel">
-              <TextBox  Text="{Binding Path=TextData}" AcceptsReturn="True" AcceptsTab="True" BorderThickness="0">
-                <b:Interaction.Triggers>
-                  <b:EventTrigger EventName="GotFocus" >
-                    <b:InvokeCommandAction Command="{Binding  Path=SetEditModeCommand}"/>
-                  </b:EventTrigger>
-                </b:Interaction.Triggers>
-              </TextBox>
-            </DataTemplate>
-          </Setter.Value>
-        </Setter>
+        <Setter Property="ContentTemplate"  Value="{DynamicResource ToDoItemTextEditorDataTemplate}"/>
       </DataTrigger>
       <DataTrigger Binding="{Binding Path=Item.CapturedDataType}" Value="3"> <!-- Image -->
         <Setter Property="ContentTemplate">

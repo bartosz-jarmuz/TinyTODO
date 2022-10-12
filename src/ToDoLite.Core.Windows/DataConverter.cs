@@ -3,6 +3,9 @@
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media.Imaging;
 
 namespace ToDoLite.Core.Windows;
@@ -60,4 +63,20 @@ public static class DataConverter
         return Encoding.UTF8.GetString(input);
     }
 
+    public static string ConvertToRtf(string value)
+    {
+        RichTextBox rtb = new RichTextBox();
+        rtb.AppendText(value);
+        TextRange textRange = new TextRange(
+            rtb.Document.ContentStart,
+            rtb.Document.ContentEnd
+        );
+        using MemoryStream ms = new MemoryStream();
+        textRange.Save(ms, DataFormats.Rtf);
+        string rtf = ASCIIEncoding.Default.GetString(ms.ToArray());
+        int offset = rtf.IndexOf(@"\f0\fs17") + 8; // offset = 118;
+        int len = rtf.LastIndexOf(@"\par") - offset;
+        string result = rtf.Substring(offset, len).Trim();
+        return rtf;
+    }
 }
