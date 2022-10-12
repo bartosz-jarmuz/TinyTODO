@@ -18,7 +18,12 @@
     <DockPanel LastChildFill="True">
       
     <Menu DockPanel.Dock="Top">
-            <MenuItem Header="Options" Command="{Binding OpenOptionsWindowCommand}"></MenuItem>
+
+      <MenuItem Header="_App" Command="{Binding OpenOptionsWindowCommand}">
+        <MenuItem Header="Options" Command="{Binding OpenOptionsWindowCommand}"/>
+        <Separator/>
+        <MenuItem Header="E_xit" Click="ExitMenuItem_OnClick" />
+      </MenuItem>
             <MenuItem IsCheckable="True" IsChecked="{Binding ShowCompleted, Mode=TwoWay}"  Header="Show completed"/>
         </Menu>
     <converters:ToDoItemsListBox ItemsSource="{Binding ToDoItems}" 

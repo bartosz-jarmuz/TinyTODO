@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ToDoLite.App.Windows.Commands;
 using ToDoLite.Core.Contracts;
 using Settings = ToDoLite.Core.Persistence.Settings;
 
@@ -69,6 +70,7 @@ namespace ToDoLite.App.Windows.ViewModel
         public ICommand DeleteItemCommand { get; set; }
 
         public ICommand OpenOptionsWindowCommand { get; set; }
+
         private void ShowOptionsWindow()
         {
             var settings = new SettingsWindow(Settings.Instance);

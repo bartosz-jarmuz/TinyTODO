@@ -8,6 +8,7 @@ using NHotkey;
 using ToDoLite.App.Windows.ViewModel;
 using ToDoLite.Core;
 using Settings = ToDoLite.Core.Persistence.Settings;
+using ToDoLite.App.Windows.Commands;
 
 namespace ToDoLite.App.Windows;
 
@@ -84,6 +85,11 @@ public partial class MainWindow : Window, IDisposable
                 this.WindowState = WindowState.Minimized;
             }
         }
+    }
+
+    private void ExitMenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        new ExitApplicationCommand(this).Execute(this);
     }
 
     #region Disposable
