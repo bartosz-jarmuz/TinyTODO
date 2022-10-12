@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,9 +18,9 @@ namespace ToDoLite.App.Windows.ViewModel
     public class ToDoItemViewModel : ObservableObject
     {
         private bool _isEditMode;
-        private Brush _backColor;
+        private Brush? _backColor;
         private Point? _lastMouseButtonDownLocation;
-
+        
         public ToDoItemViewModel(ToDoItem item)
         {
             Item = item;
@@ -37,10 +39,14 @@ namespace ToDoLite.App.Windows.ViewModel
             }
 
             _ = StartTimestampUpdateLoop();
-            SetEditModeCommand = new RelayCommand(() => this.IsEditMode = !this.IsEditMode);
+            SetEditModeCommand = new RelayCommand(() => this.IsEditMode = true);
+            SaveTextChangeCommand = new RelayCommand(this.SaveTextChange);
             HandleMouseLeftButtonDownOnImage = new RelayCommand<MouseButtonEventArgs>(StoreMousePositionAtMouseDown);
             HandleMouseLeftButtonUpOnImage = new RelayCommand<MouseButtonEventArgs>(OpenFullSizeImageInWindow);
         }
+
+
+        public event EventHandler? ItemUpdated;
 
         private void StoreMousePositionAtMouseDown(MouseButtonEventArgs? e)
         {
@@ -55,6 +61,7 @@ namespace ToDoLite.App.Windows.ViewModel
             {
                 CompletedDateTime = value ? DateTime.UtcNow : DateTime.MinValue;
                 SetProperty(Item.IsCompleted, value, Item, (targetObject, newValue) => targetObject.IsCompleted = newValue);
+                ItemUpdated?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -72,8 +79,18 @@ namespace ToDoLite.App.Windows.ViewModel
                 OnPropertyChanged(nameof(CompletedDateTimeFormatted));
             }
         }
-
-        public ClipboardDataType DataType => Item.CapturedDataType;
+        
+        private void SaveTextChange()
+        {
+            if (Item.CapturedDataType == ClipboardDataType.Html)
+            {
+                Item.PlainText = TextData;
+            }
+            SetProperty(Item.RawData, DataConverter.GetBytes(this.TextData), Item, (targetObject, newValue) => targetObject.RawData = newValue);
+          
+            this.IsEditMode = false;
+            ItemUpdated?.Invoke(this, EventArgs.Empty);
+        }
 
         public string CompletedDateTimeFormatted => $"{ Item.CompletedDateTime.ToLocalTime():dddd, dd MMMM HH:mm}";
         public string TimeDifferenceFromCompleted => $"({DateTimeExtensions.GetTimeDifference(Item.CompletedDateTime)})";
@@ -94,13 +111,14 @@ namespace ToDoLite.App.Windows.ViewModel
                 }
                 else
                 {
-                    BackColor = Brushes.AntiqueWhite;
-
+                    BackColor = null;
                 }
             }
         }
 
         public ICommand SetEditModeCommand { get; set; }
+        public ICommand SetNonEditModeCommand { get; set; }
+        public ICommand SaveTextChangeCommand { get; set; }
         public ICommand HandleMouseLeftButtonUpOnImage { get; set; }
         public ICommand HandleMouseLeftButtonDownOnImage { get; set; }
 
@@ -124,7 +142,7 @@ namespace ToDoLite.App.Windows.ViewModel
             return e.GetPosition((e.Source as Image)?.Parent as UIElement);
         }
 
-        public Brush BackColor
+        public Brush? BackColor
         {
             get => _backColor;
             set => SetProperty(ref _backColor, value);
@@ -152,6 +170,7 @@ namespace ToDoLite.App.Windows.ViewModel
                     return TimeSpan.FromHours(1);
                 }
             }
+            // ReSharper disable once FunctionNeverReturns
         }
     }
 }

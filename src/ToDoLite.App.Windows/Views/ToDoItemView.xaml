@@ -35,6 +35,8 @@
             <TextBlock Text="{Binding ActiveWindowTitle}" Margin="3"/>
           </GroupBox>
         </StackPanel>
+        <Button Width="40" Height="20" Content="Save" DockPanel.Dock="Right" Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}" Command="{Binding SaveTextChangeCommand}"/>
+
         <ContentControl HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" Content="{Binding .}" Style="{StaticResource ToDoItemControlSelector}">
 
         </ContentControl>

@@ -14,6 +14,7 @@
           <tb:TaskbarIcon x:Key="MainTaskbarIcon"
             IconSource="pack://application:,,,/ToDoLite;component/Resources/icon.ico" 
                           Visibility="Visible"/>
-        </ResourceDictionary>
+          <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </ResourceDictionary>
     </Application.Resources>
 </Application>

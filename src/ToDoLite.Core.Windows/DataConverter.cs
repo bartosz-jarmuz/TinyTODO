@@ -46,8 +46,12 @@ public static class DataConverter
         return image;
     }
 
-    public static byte[] GetBytes(string input)
+    public static byte[] GetBytes(string? input)
     {
+        if (input == null)
+        {
+            return Array.Empty<byte>();
+        }
         return Encoding.UTF8.GetBytes(input);
     }
 

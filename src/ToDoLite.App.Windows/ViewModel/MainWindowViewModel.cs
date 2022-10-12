@@ -94,14 +94,14 @@ namespace ToDoLite.App.Windows.ViewModel
         {
             if (e.NewItems != null)
                 foreach (ToDoItemViewModel item in e.NewItems)
-                    item.PropertyChanged += async (s, e) => await OnToDoItemPropertyChanged(s, e);
+                    item.ItemUpdated += OnToDoItemPropertyChanged;
 
             if (e.OldItems != null)
                 foreach (ToDoItemViewModel item in e.OldItems)
-                    item.PropertyChanged -= async (s, e) => await OnToDoItemPropertyChanged(s, e);
+                    item.ItemUpdated -= OnToDoItemPropertyChanged;
         }
 
-        async Task OnToDoItemPropertyChanged(object? sender, PropertyChangedEventArgs? e)
+        async void OnToDoItemPropertyChanged(object? sender, EventArgs eventArgs)
         {
             await _storage.SaveAsync();
         }
