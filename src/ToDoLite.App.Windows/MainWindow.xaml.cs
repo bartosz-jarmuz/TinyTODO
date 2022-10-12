@@ -32,7 +32,7 @@ public partial class MainWindow : Window, IDisposable
         try
         {
             HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.StoreClipboardContent, Key.C, ModifierKeys.Shift | ModifierKeys.Alt, _viewModel.CreateToDoItemFromClipboardContent);
-            HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.ShowWindow, Key.T, ModifierKeys.Shift | ModifierKeys.Alt, RestoreWindow);
+            HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.ShowWindow, Key.T, ModifierKeys.Shift | ModifierKeys.Alt, ToggleWindowVisibility);
         }
         catch (Exception ex)
         {
@@ -59,9 +59,31 @@ public partial class MainWindow : Window, IDisposable
         }
     }
 
-    private void RestoreWindow(object? sender, HotkeyEventArgs args)
+    private void ToggleWindowVisibility(object? sender, HotkeyEventArgs args)
     {
-        this.Show();
+        
+        if (WindowState == WindowState.Minimized || this.Visibility == Visibility.Hidden)
+        {
+            this.Visibility = Visibility.Visible;
+            this.WindowState = WindowState.Normal;
+            this.Show();
+            SystemCommands.RestoreWindow(this);
+            this.Topmost = true;
+            this.Focus();
+            this.Topmost = false;
+            
+        }
+        else
+        {
+            if (Settings.Instance.MinimizeToTray)
+            {
+                this.Hide();
+            }
+            else
+            {
+                this.WindowState = WindowState.Minimized;
+            }
+        }
     }
 
     #region Disposable
