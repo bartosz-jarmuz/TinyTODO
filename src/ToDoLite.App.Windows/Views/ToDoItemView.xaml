@@ -6,10 +6,10 @@
              xmlns:viewmodel="clr-namespace:ToDoLite.App.Windows.ViewModel"
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              d:DataContext="{d:DesignInstance Type=viewmodel:ToDoItemViewModel}"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
 
-  <Border Padding="5" CornerRadius="2" BorderThickness="1" Background="{Binding BackColor}" BorderBrush="Black"  Margin="2">
+  <Border Padding="5" CornerRadius="2" BorderThickness="1" Background="{Binding BackColor}" BorderBrush="Black"  Margin="2" >
     <Grid HorizontalAlignment="Stretch"  >
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="25"/>
@@ -17,32 +17,29 @@
         <ColumnDefinition Width="20"/>
       </Grid.ColumnDefinitions>
       <DockPanel LastChildFill="True" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  >
-        <CheckBox IsChecked="{Binding IsCompleted}" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" VerticalAlignment="Stretch"/>
+        <CheckBox IsChecked="{Binding IsCompleted}" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" VerticalAlignment="Stretch" />
       </DockPanel>
       <DockPanel  Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBox}, 
                 Converter={StaticResource WidthMinusConverter}, ConverterParameter=100}" 
                   LastChildFill="True" HorizontalAlignment="Stretch" Grid.Column="1">
-        <StackPanel  Orientation="Horizontal" DockPanel.Dock="Top" >
+        <StackPanel  Orientation="Horizontal" DockPanel.Dock="Top"  >
           <GroupBox Header="Added date" Margin="0,5">
-            <TextBlock Margin="3">
+            <TextBlock Margin="3" >
               <Run Text="{Binding CreatedDateTimeFormatted, Mode=OneWay}" FontWeight="Bold" FontSize="13"/>
               <Run Text="{Binding TimeDifferenceFromCreated, Mode=OneWay}" FontWeight="SemiBold" FontSize="12"/>
             </TextBlock>
           </GroupBox>
-          
-
           <GroupBox Header="Active application" ToolTip="Indicates in which application window was this ToDo item created"  Margin="5">
             <TextBlock Text="{Binding ActiveWindowTitle}" Margin="3"/>
           </GroupBox>
         </StackPanel>
-        <Button Width="40" Height="20" Content="Save" DockPanel.Dock="Right" Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}" Command="{Binding SaveTextChangeCommand}"/>
+        <Button Width="40"  Height="20"  Content="Save" DockPanel.Dock="Right" Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}" Command="{Binding SaveTextChangeCommand}"/>
 
-        <ContentControl HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" Content="{Binding .}" Style="{StaticResource ToDoItemControlSelector}">
+        <ContentControl  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" Content="{Binding .}" Style="{StaticResource ToDoItemControlSelector}" />
 
-        </ContentControl>
       </DockPanel>
       <StackPanel Grid.Column="2">
-        <Button Content="🗑" ToolTip="Delete item" CommandParameter="{Binding}" Command="{Binding Path=DataContext.DeleteItemCommand ,RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
+        <Button  Content="🗑" ToolTip="Delete item" CommandParameter="{Binding}" Command="{Binding Path=DataContext.DeleteItemCommand ,RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" />
       </StackPanel>
     </Grid>
   </Border>
