@@ -3,14 +3,15 @@
                     xmlns:vm="clr-namespace:ToDoLite.App.Windows.ViewModel"
                     xmlns:views="clr-namespace:ToDoLite.App.Windows.Views"
                     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-                    xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
+                    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:utilities="clr-namespace:ToDoLite.App.Windows.Utilities">
 
   <DataTemplate x:Key="ToDoItemDataTemplate" DataType="{x:Type vm:ToDoItemViewModel}">
     <views:ToDoItemView />
   </DataTemplate>
 
   <DataTemplate x:Key="ToDoItemTextEditorDataTemplate" DataType="{x:Type vm:ToDoItemViewModel}">
-    <xctk:RichTextBox MaxHeight="220" Text="{Binding Path=TextData, Mode=TwoWay}"
+    <xctk:RichTextBox MaxHeight="220" Text="{Binding Path=TextData, Mode=TwoWay}" 
                       HorizontalAlignment="Left"
                       AcceptsReturn="True"
                       AcceptsTab="True"
@@ -18,11 +19,17 @@
                       IsUndoEnabled="True"
                       AutoWordSelection="True"
                       BorderThickness="0"
+                      utilities:FocusExtension.IsFocused="{Binding IsTextBoxFocused, Mode=TwoWay}"
                       ScrollViewer.VerticalScrollBarVisibility="Auto"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto">
       <xctk:RichTextBox.TextFormatter>
         <xctk:RtfFormatter />
       </xctk:RichTextBox.TextFormatter>
+      <xctk:RichTextBox.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding SetNonEditModeCommand}"></KeyBinding>
+        <KeyBinding Key="Enter" Modifiers="Control" Command="{Binding SaveTextChangeCommand}"></KeyBinding>
+      </xctk:RichTextBox.InputBindings>
+        
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="GotFocus" >
           <b:InvokeCommandAction Command="{Binding  Path=SetEditModeCommand}"/>

@@ -20,7 +20,8 @@ namespace ToDoLite.App.Windows.ViewModel
         private bool _isEditMode;
         private Brush? _backColor;
         private Point? _lastMouseButtonDownLocation;
-        
+        private bool _isTextBoxFocused;
+
         public ToDoItemViewModel(ToDoItem item)
         {
             Item = item;
@@ -40,6 +41,7 @@ namespace ToDoLite.App.Windows.ViewModel
 
             _ = StartTimestampUpdateLoop();
             SetEditModeCommand = new RelayCommand(() => this.IsEditMode = true);
+            SetNonEditModeCommand = new RelayCommand(() => this.IsEditMode = false);
             SaveTextChangeCommand = new RelayCommand(this.SaveTextChange);
             HandleMouseLeftButtonDownOnImage = new RelayCommand<MouseButtonEventArgs>(StoreMousePositionAtMouseDown);
             HandleMouseLeftButtonUpOnImage = new RelayCommand<MouseButtonEventArgs>(OpenFullSizeImageInWindow);
@@ -82,6 +84,10 @@ namespace ToDoLite.App.Windows.ViewModel
         
         private void SaveTextChange()
         {
+            if (!IsEditMode)
+            {
+                return;
+            }
             if (Item.CapturedDataType == ClipboardDataType.Html)
             {
                 Item.PlainText = TextData;
@@ -99,6 +105,12 @@ namespace ToDoLite.App.Windows.ViewModel
         public BitmapImage? Image { get; }
         public ToDoItem Item { get; }
 
+        public bool IsTextBoxFocused
+        {
+            get => _isTextBoxFocused;
+            set => SetProperty(ref _isTextBoxFocused, value);
+        }
+
         public bool IsEditMode
         {
             get => _isEditMode;
@@ -107,10 +119,13 @@ namespace ToDoLite.App.Windows.ViewModel
                 SetProperty(ref _isEditMode, value);
                 if (value)
                 {
+                    IsTextBoxFocused = true;
                     BackColor = Brushes.Red;
                 }
                 else
                 {
+                    Keyboard.ClearFocus();
+                    IsTextBoxFocused = false;
                     BackColor = null;
                 }
             }

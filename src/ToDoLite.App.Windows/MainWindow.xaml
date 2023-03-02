@@ -6,6 +6,7 @@
         xmlns:vm="clr-namespace:ToDoLite.App.Windows.ViewModel"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:converters="clr-namespace:ToDoLite.App.Windows.Converters"
+        xmlns:controls="clr-namespace:ToDoLite.App.Windows.Controls"
         mc:Ignorable="d"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="11"
@@ -26,12 +27,12 @@
       </MenuItem>
             <MenuItem IsCheckable="True" IsChecked="{Binding ShowCompleted, Mode=TwoWay}"  Header="Show completed"/>
         </Menu>
-    <converters:ToDoItemsListBox ItemsSource="{Binding ToDoItems}" 
+    <controls:ToDoItemsListBox ItemsSource="{Binding ToDoItems}" 
                AlternationCount="2"
                ScrollViewer.CanContentScroll="False"
                Style="{StaticResource ToDoListStyle}"
                ItemContainerStyle="{StaticResource ToDoListItemStyle}" 
                ItemTemplate="{StaticResource ToDoItemDataTemplate}">
-    </converters:ToDoItemsListBox>
+    </controls:ToDoItemsListBox>
     </DockPanel>
 </Window>

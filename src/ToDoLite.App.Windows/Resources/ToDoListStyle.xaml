@@ -4,7 +4,8 @@
                     xmlns:converters="clr-namespace:ToDoLite.App.Windows.Converters"
                      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                      xmlns:viewModel="clr-namespace:ToDoLite.App.Windows.ViewModel"
-                     xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
+                     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+                     xmlns:controls="clr-namespace:ToDoLite.App.Windows.Controls">
   <converters:WidthMinusConverter x:Key="WidthMinusConverter"/>
   <converters:ToDoItemVisibilityConverter x:Key="ToDoItemVisibilityConverter" />
 
@@ -29,7 +30,7 @@
         <Setter Property="ContentTemplate">
           <Setter.Value>
             <DataTemplate DataType="viewModel:ToDoItemViewModel">
-              <converters:ZoomBorder ClipToBounds="True">
+              <controls:ZoomBorder ClipToBounds="True">
                 <Image HorizontalAlignment="Left" Source="{Binding Image}" MaxHeight="220" Cursor="Hand" ToolTip="Scroll and drag to zoom.&#x0a;Click to open full size preview.&#x0a;Right-click to reset zoom and view.">
                   <b:Interaction.Triggers>
                     <b:EventTrigger EventName="MouseLeftButtonDown" >
@@ -40,7 +41,7 @@
                     </b:EventTrigger>
                   </b:Interaction.Triggers>
                 </Image>
-              </converters:ZoomBorder>
+              </controls:ZoomBorder>
               
             </DataTemplate>
           </Setter.Value>
