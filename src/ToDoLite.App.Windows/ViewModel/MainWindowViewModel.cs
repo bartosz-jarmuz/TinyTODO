@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ToDoLite.App.Windows.Commands;
 using ToDoLite.Core.Contracts;
+using ToDoLite.Core.DataModel;
 using Settings = ToDoLite.Core.Persistence.Settings;
 
 namespace ToDoLite.App.Windows.ViewModel
@@ -50,10 +53,31 @@ namespace ToDoLite.App.Windows.ViewModel
 
         public async Task Initialize()
         {
-            var items = await _storage.LoadAllAsync();
-            foreach (var item in items)
+            try
             {
-                ToDoItems.Insert(0, new ToDoItemViewModel(item));
+                await LoadItemsAsync();
+            }
+            catch (Exception e)
+            {
+                if (MessageBox.Show($"An error occurred when trying to load database:\r\n{e.Message}\r\nWould you like to recreate the database from scratch?\r\n(All data will be lost!)", "Database initialization error", MessageBoxButton.YesNo, MessageBoxImage.Error) == MessageBoxResult.Yes)
+                {
+                    await _storage.RecreateDatabaseAsync();
+                    await LoadItemsAsync();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+
+            async Task LoadItemsAsync()
+            {
+                var items = await _storage.LoadAllAsync();
+                foreach (var item in items)
+                {
+                    ToDoItems.Insert(0, new ToDoItemViewModel(item));
+                }
             }
         }
 
