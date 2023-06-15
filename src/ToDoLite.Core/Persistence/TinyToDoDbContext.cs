@@ -31,6 +31,12 @@ namespace ToDoLite.Core.Persistence
             base.OnModelCreating(modelBuilder);
         }
 
+        public async Task RecreateDatabaseAsync()
+        {
+            await Database.EnsureDeletedAsync();
+            await Database.EnsureCreatedAsync();
+        }
+
     }
 
 

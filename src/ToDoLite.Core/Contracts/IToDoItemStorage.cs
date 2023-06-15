@@ -8,5 +8,6 @@ namespace ToDoLite.Core.Contracts
         Task InsertAsync(ToDoItem item);
         Task RemoveAsync(ToDoItem item);
         Task SaveAsync();
+        Task RecreateDatabaseAsync();
     }
 }

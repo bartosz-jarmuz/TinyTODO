@@ -31,6 +31,11 @@ namespace ToDoLite.Core.Persistence
             return await _toDoDbContext.ToDoItems.ToListAsync();
         }
 
+        public async Task RecreateDatabaseAsync()
+        {
+            await _toDoDbContext.RecreateDatabaseAsync();
+        }
+
         public async Task SaveAsync()
         {
             await _toDoDbContext.SaveChangesAsync();
