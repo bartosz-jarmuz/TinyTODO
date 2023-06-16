@@ -8,7 +8,7 @@ namespace ToDoLite.App.Windows.Controls;
 
 public class ZoomBorder : Border
 {
-    private UIElement child = null;
+    private UIElement? child = null;
     private Point origin;
     private Point start;
 
