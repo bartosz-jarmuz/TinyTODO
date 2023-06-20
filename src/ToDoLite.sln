@@ -9,6 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoLite.Core", "ToDoLite.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoLite.Core.Windows", "ToDoLite.Core.Windows\ToDoLite.Core.Windows.csproj", "{DBF65ED2-9A5B-4E84-9AAD-6E1324411FCD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5C0B9113-39A9-4792-904E-3E3A7DED4E5E}"
+	ProjectSection(SolutionItems) = preProject
+		todo-meta.md = todo-meta.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
