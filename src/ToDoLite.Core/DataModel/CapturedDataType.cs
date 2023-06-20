@@ -1,6 +1,6 @@
 ﻿namespace ToDoLite.Core.DataModel;
 
-public enum ClipboardDataType
+public enum CapturedDataType
 {
     Unsupported = -1,
     PlainText = 0,

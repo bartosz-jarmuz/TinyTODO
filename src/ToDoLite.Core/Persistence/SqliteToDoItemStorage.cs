@@ -28,7 +28,7 @@ namespace ToDoLite.Core.Persistence
 
         public async Task<IEnumerable<ToDoItem>> LoadAllAsync()
         {
-            return await _toDoDbContext.ToDoItems.ToListAsync();
+            return await _toDoDbContext.ToDoItems.Include(x=>x.Images).ToListAsync();
         }
 
         public async Task RecreateDatabaseAsync()

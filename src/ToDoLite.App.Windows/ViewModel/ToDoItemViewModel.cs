@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,7 +10,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ToDoLite.Core;
 using ToDoLite.Core.DataModel;
-using ToDoLite.Core.Windows;
+using ToDoLite.Core.Windows.DataConversion;
 
 namespace ToDoLite.App.Windows.ViewModel
 {
@@ -20,27 +19,23 @@ namespace ToDoLite.App.Windows.ViewModel
         private bool _isEditMode;
         private Brush? _backColor;
         private Point? _lastMouseButtonDownLocation;
-        
+        private bool _isTextBoxFocused;
+
         public ToDoItemViewModel(ToDoItem item)
         {
             Item = item;
 
-            if (Item.CapturedDataType == ClipboardDataType.Image)
+            if (Item.Images.Any())
             {
-                Image = DataConverter.GetImage(item.RawData);
+                Image = ImageConverter.GetImage(item.Images.First().Bytes);
             }
-            else if (Item.CapturedDataType == ClipboardDataType.Html)
-            {
-                TextData = item.PlainText;
-            }
-            else
-            {
-                TextData = DataConverter.GetString(item.RawData);
-            }
+            
+            TextData = StringConverter.GetString(item.RawData);
 
             _ = StartTimestampUpdateLoop();
-            SetEditModeCommand = new RelayCommand(() => this.IsEditMode = true);
-            SaveTextChangeCommand = new RelayCommand(this.SaveTextChange);
+            SetEditModeCommand = new RelayCommand(() => IsEditMode = true);
+            SetNonEditModeCommand = new RelayCommand(() => IsEditMode = false);
+            SaveTextChangeCommand = new RelayCommand(SaveTextChange);
             HandleMouseLeftButtonDownOnImage = new RelayCommand<MouseButtonEventArgs>(StoreMousePositionAtMouseDown);
             HandleMouseLeftButtonUpOnImage = new RelayCommand<MouseButtonEventArgs>(OpenFullSizeImageInWindow);
         }
@@ -51,7 +46,10 @@ namespace ToDoLite.App.Windows.ViewModel
         private void StoreMousePositionAtMouseDown(MouseButtonEventArgs? e)
         {
             //to allow dragging the image in preview without opening the full size
-            _lastMouseButtonDownLocation = GetMousePositionRelativeToImageBorder(e);
+            if (e != null)
+            {
+                _lastMouseButtonDownLocation = GetMousePositionRelativeToImageBorder(e);
+            }
         }
 
         public bool IsCompleted
@@ -82,13 +80,16 @@ namespace ToDoLite.App.Windows.ViewModel
         
         private void SaveTextChange()
         {
-            if (Item.CapturedDataType == ClipboardDataType.Html)
+            if (!IsEditMode)
             {
-                Item.PlainText = TextData;
+                return;
             }
-            SetProperty(Item.RawData, DataConverter.GetBytes(this.TextData), Item, (targetObject, newValue) => targetObject.RawData = newValue);
+
+            Item.PlainText = RtfConverter.ConvertToPlainText(TextData);
+            
+            SetProperty(Item.RawData, StringConverter.GetBytes(TextData), Item, (targetObject, newValue) => targetObject.RawData = newValue);
           
-            this.IsEditMode = false;
+            IsEditMode = false;
             ItemUpdated?.Invoke(this, EventArgs.Empty);
         }
 
@@ -99,6 +100,12 @@ namespace ToDoLite.App.Windows.ViewModel
         public BitmapImage? Image { get; }
         public ToDoItem Item { get; }
 
+        public bool IsTextBoxFocused
+        {
+            get => _isTextBoxFocused;
+            set => SetProperty(ref _isTextBoxFocused, value);
+        }
+
         public bool IsEditMode
         {
             get => _isEditMode;
@@ -107,10 +114,13 @@ namespace ToDoLite.App.Windows.ViewModel
                 SetProperty(ref _isEditMode, value);
                 if (value)
                 {
-                    BackColor = Brushes.Red;
+                    IsTextBoxFocused = true;
+                    BackColor = Brushes.Beige;
                 }
                 else
                 {
+                    Keyboard.ClearFocus();
+                    IsTextBoxFocused = false;
                     BackColor = null;
                 }
             }

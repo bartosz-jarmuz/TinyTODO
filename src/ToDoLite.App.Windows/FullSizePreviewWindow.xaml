@@ -7,6 +7,7 @@
         xmlns:vm="clr-namespace:ToDoLite.App.Windows.ViewModel"
         xmlns:converters="clr-namespace:ToDoLite.App.Windows.Converters"
         xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:controls="clr-namespace:ToDoLite.App.Windows.Controls"
         mc:Ignorable="d"
         Title="{Binding Title}" Height="450" Width="800">
   <Window.DataContext>
@@ -14,9 +15,9 @@
   </Window.DataContext>
   <DockPanel LastChildFill="True">
 
-    <converters:ZoomBorder ClipToBounds="True" Background="Gray" Margin="2"  DockPanel.Dock="Bottom">
+    <controls:ZoomBorder ClipToBounds="True" Background="Gray" Margin="2"  DockPanel.Dock="Bottom">
     <Image HorizontalAlignment="Center" Source="{Binding Image}" MouseDown="Image_OnMouseDown"/>
-  </converters:ZoomBorder>
+  </controls:ZoomBorder>
   </DockPanel>
 
 </Window>
