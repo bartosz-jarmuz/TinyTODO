@@ -1,4 +1,4 @@
-﻿using ToDoLite.Core.DataModel;
+﻿using ToDoLite.Core.ClipboardModel;
 
 namespace ToDoLite.Core.Contracts;
 

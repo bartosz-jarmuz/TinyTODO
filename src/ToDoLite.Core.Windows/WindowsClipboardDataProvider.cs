@@ -1,7 +1,8 @@
 ﻿using System.Windows;
-using System.Windows.Media.Imaging;
+using ToDoLite.Core.ClipboardModel;
 using ToDoLite.Core.Contracts;
 using ToDoLite.Core.DataModel;
+using ToDoLite.Core.Windows.DataConversion;
 
 namespace ToDoLite.Core.Windows;
 
@@ -15,23 +16,27 @@ public class WindowsClipboardDataProvider : IClipboardDataProvider
             return null;
         }
         var plainText = Clipboard.GetText();
-        plainText = DataConverter.ConvertToRtf(plainText);
         if (dataObject.GetDataPresent(DataFormats.Html))
         {
-            var data = dataObject.GetData(DataFormats.Html);
-            return new ClipboardData(ClipboardDataType.Html, plainText, DataConverter.GetBytes(data?.ToString()??""));
+            //at the moment, cannot use HTML data properly, because I have no way to convert HTML markup (what you get by line below) to RTF (our text boxes are all RTF because of how we want to allow editing)
+            //var data = dataObject.GetData(DataFormats.Html);
+            //therefore, as a workaround, do not store HTML data at all and rather convert plain text to RTF and store that data.
+            //this is because conversion of plain text to RTF preserves whitespace etc, so all in all the ToDoItem looks okay(ish)
+            var formattedPlainTextAsWorkaroundForHtml = RtfConverter.ConvertToRtf(plainText);
+
+            return new TextualClipboardData(CapturedDataType.Html, plainText, StringConverter.GetBytes(formattedPlainTextAsWorkaroundForHtml));
         }
         else if (dataObject.GetDataPresent(DataFormats.Rtf))
         {
             var data = dataObject.GetData(DataFormats.Rtf);
-            return new ClipboardData(ClipboardDataType.RichText, plainText, DataConverter.GetBytes(data?.ToString() ?? ""));
+            return new TextualClipboardData(CapturedDataType.RichText, plainText, StringConverter.GetBytes(data?.ToString() ?? ""));
         }
         else if (Clipboard.ContainsImage())
         {
             var data = Clipboard.GetImage();
-            if (data is BitmapSource bitmapSource)
+            if (data != null)
             {
-                return new ClipboardData(ClipboardDataType.Image, plainText, DataConverter.GetBytes(bitmapSource));
+                return new ImageClipboardData(ImageConverter.GetBytes(data));
             }
             else
             {
@@ -40,11 +45,11 @@ public class WindowsClipboardDataProvider : IClipboardDataProvider
         }
         else if (Clipboard.ContainsText())
         {
-            return new ClipboardData(ClipboardDataType.PlainText, plainText, DataConverter.GetBytes(plainText));
+            return new TextualClipboardData(CapturedDataType.PlainText, plainText, StringConverter.GetBytes(plainText));
         }
         else
         {
-            return new ClipboardData(ClipboardDataType.Unsupported, $"Unsupported format: [{string.Join(", ", Clipboard.GetDataObject().GetFormats())}]", Array.Empty<byte>());
+            return new TextualClipboardData(CapturedDataType.Unsupported, $"Unsupported format: [{string.Join(", ", Clipboard.GetDataObject()?.GetFormats() ?? new[]{"Data Object or format are null"})}]", Array.Empty<byte>());
         }
     }
 

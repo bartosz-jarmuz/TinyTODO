@@ -5,11 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewmodel="clr-namespace:ToDoLite.App.Windows.ViewModel"
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:controls="clr-namespace:ToDoLite.App.Windows.Controls"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:utilities="clr-namespace:ToDoLite.App.Windows.Utilities"
              d:DataContext="{d:DesignInstance Type=viewmodel:ToDoItemViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
 
-  <Border Padding="5" CornerRadius="2" BorderThickness="1" Background="{Binding BackColor}" BorderBrush="Black"  Margin="2" >
+  <Border Padding="5" CornerRadius="0" BorderThickness="1" Background="{Binding BackColor}" BorderBrush="Black"  Margin="2" >
     <Grid HorizontalAlignment="Stretch"  >
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="25"/>
@@ -35,8 +38,47 @@
         </StackPanel>
         <Button Width="40"  Height="20"  Content="Save" DockPanel.Dock="Right" Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}" Command="{Binding SaveTextChangeCommand}"/>
 
-        <ContentControl  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" Content="{Binding .}" Style="{StaticResource ToDoItemControlSelector}" />
+        <StackPanel Orientation="Vertical">
+          <xctk:RichTextBox MaxHeight="220" Text="{Binding Path=TextData, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                          HorizontalAlignment="Left"
+                          AcceptsReturn="True"
+                          AcceptsTab="True"
+                          AllowDrop="True"
+                          IsUndoEnabled="True"
+                          AutoWordSelection="True"
+                          BorderThickness="1"
+                          Margin="1"
+                          utilities:FocusExtension.IsFocused="{Binding IsTextBoxFocused, Mode=TwoWay}"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto">
+            <xctk:RichTextBox.TextFormatter>
+              <xctk:RtfFormatter />
+            </xctk:RichTextBox.TextFormatter>
+            <xctk:RichTextBox.InputBindings>
+              <KeyBinding Key="Escape" Command="{Binding SetNonEditModeCommand}"></KeyBinding>
+              <KeyBinding Key="Enter" Modifiers="Control" Command="{Binding SaveTextChangeCommand}"></KeyBinding>
+            </xctk:RichTextBox.InputBindings>
 
+            <b:Interaction.Triggers>
+              <b:EventTrigger EventName="GotFocus" >
+                <b:InvokeCommandAction Command="{Binding  Path=SetEditModeCommand}"/>
+              </b:EventTrigger>
+            </b:Interaction.Triggers>
+          </xctk:RichTextBox>
+
+          <controls:ZoomBorder ClipToBounds="True">
+            <Image HorizontalAlignment="Left" Source="{Binding Image}" MaxHeight="220" Cursor="Hand" ToolTip="Scroll and drag to zoom.&#x0a;Click to open full size preview.&#x0a;Right-click to reset zoom and view.">
+              <b:Interaction.Triggers>
+                <b:EventTrigger EventName="MouseLeftButtonDown" >
+                  <b:InvokeCommandAction Command="{Binding  Path=HandleMouseLeftButtonDownOnImage}" PassEventArgsToCommand="True"/>
+                </b:EventTrigger>
+                <b:EventTrigger EventName="MouseLeftButtonUp" >
+                  <b:InvokeCommandAction Command="{Binding  Path=HandleMouseLeftButtonUpOnImage}" PassEventArgsToCommand="True"/>
+                </b:EventTrigger>
+              </b:Interaction.Triggers>
+            </Image>
+          </controls:ZoomBorder>
+        </StackPanel>
       </DockPanel>
       <StackPanel Grid.Column="2">
         <Button  Content="🗑" ToolTip="Delete item" CommandParameter="{Binding}" Command="{Binding Path=DataContext.DeleteItemCommand ,RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" />

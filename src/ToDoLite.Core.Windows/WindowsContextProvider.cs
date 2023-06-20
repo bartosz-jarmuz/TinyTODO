@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
+using ToDoLite.Core.ClipboardModel;
 using ToDoLite.Core.Contracts;
-using ToDoLite.Core.DataModel;
 
 namespace ToDoLite.Core.Windows;
 
