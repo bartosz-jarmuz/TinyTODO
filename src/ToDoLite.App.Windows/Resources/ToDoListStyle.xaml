@@ -14,43 +14,6 @@
     <Setter Property="BorderThickness" Value="0"/>
   </Style>
 
- 
-  <Style TargetType="{x:Type ContentControl}" x:Key="ToDoItemControlSelector"> 
-    <Style.Triggers>
-      <DataTrigger Binding="{Binding Path=Item.CapturedDataType}" Value="0" > <!--plain text -->
-        <Setter Property="ContentTemplate"  Value="{DynamicResource ToDoItemTextEditorDataTemplate}"/>
-      </DataTrigger>
-      <DataTrigger Binding="{Binding Path=Item.CapturedDataType}" Value="1" > <!--Rich text -->
-        <Setter Property="ContentTemplate"  Value="{DynamicResource ToDoItemTextEditorDataTemplate}"/>
-      </DataTrigger>
-      <DataTrigger Binding="{Binding Path=Item.CapturedDataType}" Value="2"> <!-- html-->
-        <Setter Property="ContentTemplate"  Value="{DynamicResource ToDoItemTextEditorDataTemplate}"/>
-      </DataTrigger>
-      <DataTrigger Binding="{Binding Path=Item.CapturedDataType}" Value="3"> <!-- Image -->
-        <Setter Property="ContentTemplate">
-          <Setter.Value>
-            <DataTemplate DataType="viewModel:ToDoItemViewModel">
-              <controls:ZoomBorder ClipToBounds="True">
-                <Image HorizontalAlignment="Left" Source="{Binding Image}" MaxHeight="220" Cursor="Hand" ToolTip="Scroll and drag to zoom.&#x0a;Click to open full size preview.&#x0a;Right-click to reset zoom and view.">
-                  <b:Interaction.Triggers>
-                    <b:EventTrigger EventName="MouseLeftButtonDown" >
-                      <b:InvokeCommandAction Command="{Binding  Path=HandleMouseLeftButtonDownOnImage}" PassEventArgsToCommand="True"/>
-                    </b:EventTrigger>
-                    <b:EventTrigger EventName="MouseLeftButtonUp" >
-                      <b:InvokeCommandAction Command="{Binding  Path=HandleMouseLeftButtonUpOnImage}" PassEventArgsToCommand="True"/>
-                    </b:EventTrigger>
-                  </b:Interaction.Triggers>
-                </Image>
-              </controls:ZoomBorder>
-              
-            </DataTemplate>
-          </Setter.Value>
-        </Setter>
-      </DataTrigger>
-    </Style.Triggers>
-  </Style>
-
-
   <Style TargetType="{x:Type ListBoxItem}" x:Key="ToDoListItemStyle"  >
     <Style.Triggers>
       <DataTrigger Binding="{Binding Path=IsCompleted}" Value="True">

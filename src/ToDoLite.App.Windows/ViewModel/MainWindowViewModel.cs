@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ToDoLite.App.Windows.Commands;
 using ToDoLite.Core.Contracts;
 using ToDoLite.Core.DataModel;
 using Settings = ToDoLite.Core.Persistence.Settings;
@@ -74,7 +72,7 @@ namespace ToDoLite.App.Windows.ViewModel
             async Task LoadItemsAsync()
             {
                 var items = await _storage.LoadAllAsync();
-                foreach (var item in items)
+                foreach (var item in items.OrderBy(x=>x.CreatedDateTime))
                 {
                     ToDoItems.Insert(0, new ToDoItemViewModel(item));
                 }

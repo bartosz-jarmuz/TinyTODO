@@ -1,4 +1,5 @@
-﻿using ToDoLite.Core.Contracts;
+﻿using ToDoLite.Core.ClipboardModel;
+using ToDoLite.Core.Contracts;
 using ToDoLite.Core.DataModel;
 
 namespace ToDoLite.Core;
@@ -17,12 +18,21 @@ public class ToDoItemGenerator : IToDoItemGenerator
     public ToDoItem? GenerateItem()
     {
         var data = _clipboardProvider.GetData();
-        var context = _contextProvider.GetToDoContext();
         if (data == null)
         {
             return null;
         }
+        var context = _contextProvider.GetToDoContext();
 
-        return new ToDoItem(data, context);
+        if (data is TextualClipboardData textualClipboard)
+        {
+            return new ToDoItem(textualClipboard, context);
+        }
+        else if (data is ImageClipboardData imageClipboard)
+        {
+            return new ToDoItem(imageClipboard, context);
+        }
+
+        throw new ArgumentException($"Unexpected Clipboard data type: {data.GetType().Name}");
     }
 }
