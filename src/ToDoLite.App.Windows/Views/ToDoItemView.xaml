@@ -40,6 +40,7 @@
 
         <StackPanel Orientation="Vertical">
           <xctk:RichTextBox MaxHeight="220" Text="{Binding Path=TextData, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                            MinHeight="40"
                           HorizontalAlignment="Left"
                           AcceptsReturn="True"
                           AcceptsTab="True"

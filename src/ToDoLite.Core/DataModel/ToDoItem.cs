@@ -6,6 +6,13 @@ public class ToDoItem
 {
     public ToDoItem() { }
 
+    public ToDoItem(string plainText, byte[] rawData, ItemCreationContext context) : this(context)
+    {
+        PlainText = plainText;
+        RawData = rawData;
+        CapturedDataType = CapturedDataType.RichText;
+    }
+
     public ToDoItem(TextualClipboardData data, ItemCreationContext context) : this(context)
     {
         PlainText = data.PlainText;

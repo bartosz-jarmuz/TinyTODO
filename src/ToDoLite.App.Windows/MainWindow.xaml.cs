@@ -33,6 +33,7 @@ public partial class MainWindow : Window, IDisposable
         try
         {
             HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.StoreClipboardContent, Key.C, ModifierKeys.Shift | ModifierKeys.Alt, _viewModel.CreateToDoItemFromClipboardContent);
+            HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.OpenAddItemWindow, Key.N, ModifierKeys.Shift | ModifierKeys.Alt, _viewModel.OpenAddNewItemWindow);
             HotkeyManager.Current.AddOrReplace(HotkeyIdentifiers.ShowWindow, Key.T, ModifierKeys.Shift | ModifierKeys.Alt, ToggleWindowVisibility);
         }
         catch (Exception ex)

@@ -25,7 +25,8 @@
         <Separator/>
         <MenuItem Header="E_xit" Click="ExitMenuItem_OnClick" />
       </MenuItem>
-            <MenuItem IsCheckable="True" IsChecked="{Binding ShowCompleted, Mode=TwoWay}"  Header="Show completed"/>
+      <MenuItem IsCheckable="True" IsChecked="{Binding ShowCompleted, Mode=TwoWay}"  Header="Show completed"/>
+      <MenuItem Command="{Binding OpenAddNewItemWindowCommand}" Header="Add _new item" Background="LightSeaGreen" BorderThickness="1" BorderBrush="Black"/>
         </Menu>
     <controls:ToDoItemsListBox ItemsSource="{Binding ToDoItems}" 
                AlternationCount="2"

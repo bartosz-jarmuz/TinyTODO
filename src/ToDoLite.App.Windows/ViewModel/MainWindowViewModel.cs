@@ -29,6 +29,7 @@ namespace ToDoLite.App.Windows.ViewModel
             ToDoItems.CollectionChanged += OnToDoItemsCollectionChange;
             DeleteItemCommand = new AsyncRelayCommand<ToDoItemViewModel>(DeleteItem);
             OpenOptionsWindowCommand = new RelayCommand(ShowOptionsWindow);
+            OpenAddNewItemWindowCommand = new RelayCommand(()=>OpenAddNewItemWindow());
         }
 
         private readonly IConfirmationEmitter _confirmationEmitter;
@@ -92,15 +93,33 @@ namespace ToDoLite.App.Windows.ViewModel
         public ICommand DeleteItemCommand { get; set; }
 
         public ICommand OpenOptionsWindowCommand { get; set; }
+        public ICommand OpenAddNewItemWindowCommand { get; set; }
 
         private void ShowOptionsWindow()
         {
             var settings = new SettingsWindow(Settings.Instance);
             settings.ShowDialog();
             this.UpdateSettingBasedProperties();
+        } 
+        
+        public void OpenAddNewItemWindow(object? _ = null, object? __ = null)
+        {
+            var window = new AddItemWindow();
+            window.ShowDialog();
+            window.Activate();
+            window.Focus();
+            if (window.DataContext is AddItemWindowViewModel addItemViewModel)
+            {
+                if (addItemViewModel.ToDoItem != null)
+                {
+                    Task.Run(() => _storage.InsertAsync(addItemViewModel.ToDoItem));
+                    ToDoItems.Insert(0, new ToDoItemViewModel(addItemViewModel.ToDoItem));
+                    _confirmationEmitter.Done();
+                }
+            }
         }
 
-        public void CreateToDoItemFromClipboardContent(object? sender, object args)
+        public void CreateToDoItemFromClipboardContent(object? _, object __)
         {
             var todoItem = _toDoItemGenerator.GenerateItem();
             if (todoItem == null)
