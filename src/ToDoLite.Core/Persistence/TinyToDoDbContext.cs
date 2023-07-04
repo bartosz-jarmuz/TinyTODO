@@ -28,6 +28,10 @@ namespace ToDoLite.Core.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Setting>().HasKey(s => s.Key);
+            modelBuilder.Entity<ToDoItem>()
+                .HasMany(e => e.Tags)
+                .WithMany(e => e.ToDoItems);
+
             base.OnModelCreating(modelBuilder);
         }
 

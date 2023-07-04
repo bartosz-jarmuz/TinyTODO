@@ -58,4 +58,6 @@ public class ToDoItem
     public byte[] RawData { get; set; } = Array.Empty<byte>();
     
     public ICollection<ImageData> Images { get; set; } = new List<ImageData>();
+
+    public ICollection<Tag> Tags { get; set; } = new List<Tag>();
 }
