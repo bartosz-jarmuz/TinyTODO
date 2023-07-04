@@ -28,7 +28,7 @@ namespace ToDoLite.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tag",
+                name: "Tags",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -37,7 +37,7 @@ namespace ToDoLite.Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tag", x => x.Id);
+                    table.PrimaryKey("PK_Tags", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -88,9 +88,9 @@ namespace ToDoLite.Core.Migrations
                 {
                     table.PrimaryKey("PK_TagToDoItem", x => new { x.TagsId, x.ToDoItemsId });
                     table.ForeignKey(
-                        name: "FK_TagToDoItem_Tag_TagsId",
+                        name: "FK_TagToDoItem_Tags_TagsId",
                         column: x => x.TagsId,
-                        principalTable: "Tag",
+                        principalTable: "Tags",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -125,7 +125,7 @@ namespace ToDoLite.Core.Migrations
                 name: "TagToDoItem");
 
             migrationBuilder.DropTable(
-                name: "Tag");
+                name: "Tags");
 
             migrationBuilder.DropTable(
                 name: "ToDoItems");

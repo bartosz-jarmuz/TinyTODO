@@ -11,8 +11,8 @@ using ToDoLite.Core.Persistence;
 namespace ToDoLite.Core.Migrations
 {
     [DbContext(typeof(ToDoLiteDbContext))]
-    [Migration("20230704134048_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20230704142058_MakeTagDescriptionNullable")]
+    partial class MakeTagDescriptionNullable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -87,7 +87,6 @@ namespace ToDoLite.Core.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")

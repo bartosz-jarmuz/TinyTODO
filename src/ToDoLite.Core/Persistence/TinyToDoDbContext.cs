@@ -10,10 +10,11 @@ namespace ToDoLite.Core.Persistence
         public ToDoLiteDbContext()
 #pragma warning restore CS8618
         {
-            Database.EnsureCreated();
+            Database.Migrate();
         }
 
         public DbSet<ToDoItem> ToDoItems { get; set; }
+        public DbSet<Tag> Tags { get; set; }
         public DbSet<Setting> Settings { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

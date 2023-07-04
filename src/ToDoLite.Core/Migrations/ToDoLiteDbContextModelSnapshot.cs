@@ -77,14 +77,13 @@ namespace ToDoLite.Core.Migrations
                     b.ToTable("Settings");
                 });
 
-            modelBuilder.Entity("ToDoLite.Core.DataModel.Tag", b =>
+            modelBuilder.Entity("ToDoLite.Core.DataModel.Tags", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -93,7 +92,7 @@ namespace ToDoLite.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tag");
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("ToDoLite.Core.DataModel.ToDoItem", b =>
@@ -131,7 +130,7 @@ namespace ToDoLite.Core.Migrations
 
             modelBuilder.Entity("TagToDoItem", b =>
                 {
-                    b.HasOne("ToDoLite.Core.DataModel.Tag", null)
+                    b.HasOne("ToDoLite.Core.DataModel.Tags", null)
                         .WithMany()
                         .HasForeignKey("TagsId")
                         .OnDelete(DeleteBehavior.Cascade)
