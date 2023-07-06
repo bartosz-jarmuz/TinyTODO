@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		todo-meta.md = todo-meta.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoLite.App.Windows.TextToColor", "ToDoLite.App.Windows.TextToColor\ToDoLite.App.Windows.TextToColor.csproj", "{8C8C76E3-91BF-4E57-98D0-19443DA77C6E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{DBF65ED2-9A5B-4E84-9AAD-6E1324411FCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBF65ED2-9A5B-4E84-9AAD-6E1324411FCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBF65ED2-9A5B-4E84-9AAD-6E1324411FCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C8C76E3-91BF-4E57-98D0-19443DA77C6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C8C76E3-91BF-4E57-98D0-19443DA77C6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C8C76E3-91BF-4E57-98D0-19443DA77C6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C8C76E3-91BF-4E57-98D0-19443DA77C6E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
