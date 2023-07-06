@@ -4,7 +4,7 @@ using ToDoLite.Core.DataModel;
 
 namespace ToDoLite.Core.Persistence
 {
-    public class ToDoLiteDbContext : DbContext 
+    public sealed class ToDoLiteDbContext : DbContext 
     {
 #pragma warning disable CS8618
         public ToDoLiteDbContext()
@@ -28,6 +28,7 @@ namespace ToDoLite.Core.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Tag>().Property(p => p.Name).UseCollation("NOCASE"); //tags should be case insensitive
             modelBuilder.Entity<Setting>().HasKey(s => s.Key);
             modelBuilder.Entity<ToDoItem>()
                 .HasMany(e => e.Tags)

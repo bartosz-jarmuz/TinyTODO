@@ -35,6 +35,28 @@
           <GroupBox Header="Active application" ToolTip="Indicates in which application window was this ToDo item created"  Margin="5">
             <TextBlock Text="{Binding ActiveWindowTitle}" Margin="3"/>
           </GroupBox>
+          <GroupBox ToolTip="Tags associated with this ToDo item"  Margin="5">
+            <GroupBox.Header>
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Tags"/>
+                <Button Content="Add" Command="{Binding AddTagCommand}" Margin="3,0"/>
+              </StackPanel>
+            </GroupBox.Header>
+            <ListBox ItemsSource="{Binding Tags}">
+              <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel IsItemsHost="True" />
+                </ItemsPanelTemplate>
+              </ListBox.ItemsPanel>
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <StackPanel>
+                    <TextBox Background="Transparent" BorderThickness="0" TextWrapping="Wrap" IsReadOnly="True" Text="{Binding Name}" ToolTip="{Binding Description}"/>
+                  </StackPanel>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </GroupBox>
         </StackPanel>
         <Button Width="40"  Height="20"  Content="Save" DockPanel.Dock="Right" Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}" Command="{Binding SaveTextChangeCommand}"/>
 

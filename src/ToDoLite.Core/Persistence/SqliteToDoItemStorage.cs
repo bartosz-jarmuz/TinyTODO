@@ -4,7 +4,7 @@ using ToDoLite.Core.DataModel;
 
 namespace ToDoLite.Core.Persistence
 {
-    public sealed class SqliteToDoItemStorage : IToDoItemStorage
+    public sealed class SqliteToDoItemStorage : IToDoItemStorage, ITagRepository
     {
         private readonly ToDoLiteDbContext _toDoDbContext;
         private bool _isDisposed;
@@ -28,7 +28,33 @@ namespace ToDoLite.Core.Persistence
 
         public async Task<IEnumerable<ToDoItem>> LoadAllAsync()
         {
-            return await _toDoDbContext.ToDoItems.Include(x=>x.Images).ToListAsync();
+            return await _toDoDbContext.ToDoItems.Include(x=>x.Images).Include(x=>x.Tags).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Tag>> LoadAllTagsAsync()
+        {
+            return await _toDoDbContext.Tags.ToListAsync();
+
+        }
+
+        public async Task<Tag> GetOrCreateTagAsync(string name, string? description)
+        {
+            var existingTag = await _toDoDbContext.Tags.FirstOrDefaultAsync(x => x.Name == name);
+            if (existingTag != null)
+            {
+                return existingTag;
+            }
+            else
+            {
+                var tag = new Tag(name)
+                {
+                    Description = description
+                };
+                _toDoDbContext.Tags.Add(tag);
+                return tag;
+            }
+
+
         }
 
         public async Task RecreateDatabaseAsync()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -9,6 +10,7 @@ using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ToDoLite.Core;
+using ToDoLite.Core.Contracts;
 using ToDoLite.Core.DataModel;
 using ToDoLite.Core.Windows.DataConversion;
 
@@ -16,31 +18,35 @@ namespace ToDoLite.App.Windows.ViewModel
 {
     public class ToDoItemViewModel : ObservableObject
     {
+        private readonly ITagRepository _tagRepository;
         private bool _isEditMode;
         private Brush? _backColor;
         private Point? _lastMouseButtonDownLocation;
         private bool _isTextBoxFocused;
 
-        public ToDoItemViewModel(ToDoItem item)
+        public ToDoItemViewModel(ToDoItem item,  ITagRepository tagRepository)
         {
+            _tagRepository = tagRepository ?? throw new ArgumentNullException(nameof(tagRepository));
             Item = item;
 
             if (Item.Images.Any())
             {
                 Image = ImageConverter.GetImage(item.Images.First().Bytes);
             }
-            
+
+            Tags = new ObservableCollection<Tag>(Item.Tags);
             TextData = StringConverter.GetString(item.RawData);
 
             _ = StartTimestampUpdateLoop();
             SetEditModeCommand = new RelayCommand(() => IsEditMode = true);
             SetNonEditModeCommand = new RelayCommand(() => IsEditMode = false);
+            AddTagCommand = new RelayCommand(async ()=> await AddTag());
             SaveTextChangeCommand = new RelayCommand(SaveTextChange);
             HandleMouseLeftButtonDownOnImage = new RelayCommand<MouseButtonEventArgs>(StoreMousePositionAtMouseDown);
             HandleMouseLeftButtonUpOnImage = new RelayCommand<MouseButtonEventArgs>(OpenFullSizeImageInWindow);
         }
 
-
+       
         public event EventHandler? ItemUpdated;
 
         private void StoreMousePositionAtMouseDown(MouseButtonEventArgs? e)
@@ -77,7 +83,28 @@ namespace ToDoLite.App.Windows.ViewModel
                 OnPropertyChanged(nameof(CompletedDateTimeFormatted));
             }
         }
-        
+
+        private async Task AddTag()
+        {
+            var window = new AddTagWindow();
+            window.ShowDialog();
+            window.Activate();
+            window.Focus();
+            if (window.DataContext is AddTagWindowViewModel vm)
+            {
+                if (vm.TagName != null)
+                {
+                    var tag = await _tagRepository.GetOrCreateTagAsync(vm.TagName, vm.TagDescription);
+                    if (Item.Tags.All(x => x.Id != tag.Id))
+                    {
+                        Item.Tags.Add(tag);
+                        ItemUpdated?.Invoke(this, EventArgs.Empty);
+                        Tags.Add(tag);
+                    }
+                }
+            }
+        }
+
         private void SaveTextChange()
         {
             if (!IsEditMode)
@@ -99,6 +126,8 @@ namespace ToDoLite.App.Windows.ViewModel
         public string? TextData { get; set; }
         public BitmapImage? Image { get; }
         public ToDoItem Item { get; }
+
+        public ObservableCollection<Tag> Tags { get; }
 
         public bool IsTextBoxFocused
         {
@@ -128,6 +157,7 @@ namespace ToDoLite.App.Windows.ViewModel
 
         public ICommand SetEditModeCommand { get; set; }
         public ICommand SetNonEditModeCommand { get; set; }
+        public ICommand AddTagCommand { get; set; }
         public ICommand SaveTextChangeCommand { get; set; }
         public ICommand HandleMouseLeftButtonUpOnImage { get; set; }
         public ICommand HandleMouseLeftButtonDownOnImage { get; set; }

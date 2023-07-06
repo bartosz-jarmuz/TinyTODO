@@ -22,9 +22,10 @@ namespace ToDoLite.App.Windows.ViewModel
         public MainWindowViewModel(){}
 #pragma warning restore CS8618
 
-        public MainWindowViewModel(IToDoItemStorage toDoItemStorage, IToDoItemGenerator toDoItemGenerator, IConfirmationEmitter confirmationEmitter, IDataExporter dataExporter)
+        public MainWindowViewModel(IToDoItemStorage toDoItemStorage, ITagRepository tagRepository, IToDoItemGenerator toDoItemGenerator, IConfirmationEmitter confirmationEmitter, IDataExporter dataExporter)
         {
             _storage = toDoItemStorage;
+            _tagRepository = tagRepository;
             _toDoItemGenerator = toDoItemGenerator;
             _confirmationEmitter = confirmationEmitter;
             _dataExporter = dataExporter;
@@ -42,6 +43,7 @@ namespace ToDoLite.App.Windows.ViewModel
         private readonly IToDoItemGenerator _toDoItemGenerator;
 
         private readonly IToDoItemStorage _storage;
+        private readonly ITagRepository _tagRepository;
         private bool _isDisposed;
 
         public bool ShowCompleted
@@ -81,7 +83,7 @@ namespace ToDoLite.App.Windows.ViewModel
                 var items = await _storage.LoadAllAsync();
                 foreach (var item in items.OrderBy(x=>x.CreatedDateTime))
                 {
-                    ToDoItems.Insert(0, new ToDoItemViewModel(item));
+                    ToDoItems.Insert(0, new ToDoItemViewModel(item, _tagRepository));
                 }
             }
         }
@@ -161,7 +163,7 @@ namespace ToDoLite.App.Windows.ViewModel
                 if (addItemViewModel.ToDoItem != null)
                 {
                     Task.Run(() => _storage.InsertAsync(addItemViewModel.ToDoItem));
-                    ToDoItems.Insert(0, new ToDoItemViewModel(addItemViewModel.ToDoItem));
+                    ToDoItems.Insert(0, new ToDoItemViewModel(addItemViewModel.ToDoItem, _tagRepository));
                     _confirmationEmitter.Done();
                 }
             }
@@ -177,7 +179,7 @@ namespace ToDoLite.App.Windows.ViewModel
             }
 
             Task.Run(()=>_storage.InsertAsync(todoItem));
-            ToDoItems.Insert(0, new ToDoItemViewModel(todoItem));
+            ToDoItems.Insert(0, new ToDoItemViewModel(todoItem, _tagRepository));
             _confirmationEmitter.Done();
         }
 

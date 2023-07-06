@@ -42,10 +42,12 @@ namespace ToDoLite.App.Windows
             services.AddSingleton<IClipboardDataProvider, WindowsClipboardDataProvider>();
             services.AddSingleton<IContextProvider, WindowsContextProvider>();
             services.AddSingleton<IToDoItemGenerator, ToDoItemGenerator>();
-            services.AddSingleton<IToDoItemStorage, SqliteToDoItemStorage>();
+
+            var storage = new SqliteToDoItemStorage();
+            services.AddSingleton<IToDoItemStorage>(storage);
+            services.AddSingleton<ITagRepository>(storage);
+
             services.AddSingleton<IDataExporter, JsonDataExporter>();
-
-
             services.AddTransient<MainWindowViewModel>();
 
             return services.BuildServiceProvider();

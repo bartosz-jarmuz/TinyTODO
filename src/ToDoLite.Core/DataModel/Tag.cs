@@ -2,6 +2,13 @@
 
 public class Tag
 {
+    public Tag() { }
+
+    public Tag(string name)
+    {
+        Name = name;
+    }
+
     // ReSharper disable once UnusedMember.Global - EntityFramework PK
     public Guid Id { get; set; }
     
