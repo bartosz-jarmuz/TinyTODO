@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         FocusManager.FocusedElement="{Binding ElementName=NameInputBox}"
-        Title="Add new Tag" Height="160" Width="300">
+        Title="Add new Tag" SizeToContent="Height" Width="300">
   <Window.DataContext>
     <viewModel:AddTagWindowViewModel/>
   </Window.DataContext>
@@ -22,8 +22,12 @@
     </GroupBox>
 
     <GroupBox Header="Description" Margin="2" >
-      <TextBox DockPanel.Dock="Bottom" x:Name="DescriptionInputBox" Text="{Binding TagDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinLines="2" />
-    </GroupBox>
-    <Button Content="Add" DockPanel.Dock="Bottom" Margin="3" FontWeight="Bold" Command="{Binding AddNewTagCommand}"/>
+            <TextBox DockPanel.Dock="Bottom" AcceptsReturn="True" x:Name="DescriptionInputBox" Text="{Binding TagDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinLines="2" >
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Enter" Modifiers="Control" Command="{Binding AddNewTagCommand}" />
+                </TextBox.InputBindings>
+            </TextBox>
+        </GroupBox>
+    <Button Content="Add" Margin="3" FontWeight="Bold" Command="{Binding AddNewTagCommand}"/>
   </StackPanel>
 </Window>
