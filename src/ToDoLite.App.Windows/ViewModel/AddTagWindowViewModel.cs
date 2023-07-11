@@ -11,6 +11,7 @@ public class AddTagWindowViewModel : ObservableObject
     public AddTagWindowViewModel()
     {
         AddNewTagCommand = new RelayCommand(ConfirmTagCreation);
+        CancelCommand = new RelayCommand(() => CloseWindow?.Invoke());
     }
 
     private void ConfirmTagCreation()
@@ -25,6 +26,7 @@ public class AddTagWindowViewModel : ObservableObject
 
     public bool ShouldSaveNewTag { get; private set; }
     public ICommand AddNewTagCommand { get; private set; }
+    public ICommand CancelCommand { get; private set; }
     public string? TagName { get; set; }
     public string? TagDescription { get; set; }
     public Action? CloseWindow { get; set; }

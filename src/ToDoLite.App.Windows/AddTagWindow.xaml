@@ -12,6 +12,9 @@
   <Window.DataContext>
     <viewModel:AddTagWindowViewModel/>
   </Window.DataContext>
+    <Window.InputBindings>
+        <KeyBinding Key="Esc" Command="{Binding CancelCommand}"/>
+    </Window.InputBindings>
   <StackPanel>
     <GroupBox Header="Name" Margin="2" >
     <TextBox DockPanel.Dock="Bottom" x:Name="NameInputBox" Text="{Binding TagName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
