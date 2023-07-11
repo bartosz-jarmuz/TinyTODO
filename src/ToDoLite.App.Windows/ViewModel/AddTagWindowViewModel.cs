@@ -10,18 +10,20 @@ public class AddTagWindowViewModel : ObservableObject
 {
     public AddTagWindowViewModel()
     {
-        AddNewTagCommand = new RelayCommand(CreateTag);
+        AddNewTagCommand = new RelayCommand(ConfirmTagCreation);
     }
 
-    private void CreateTag()
+    private void ConfirmTagCreation()
     {
         if (TagName != null)
         {
+            ShouldSaveNewTag = true;
             CloseWindow?.Invoke();
         }
         
     }
 
+    public bool ShouldSaveNewTag { get; private set; }
     public ICommand AddNewTagCommand { get; private set; }
     public string? TagName { get; set; }
     public string? TagDescription { get; set; }

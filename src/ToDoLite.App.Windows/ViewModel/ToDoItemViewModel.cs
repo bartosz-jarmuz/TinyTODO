@@ -90,7 +90,7 @@ namespace ToDoLite.App.Windows.ViewModel
             window.ShowDialog();
             window.Activate();
             window.Focus();
-            if (window.DataContext is AddTagWindowViewModel vm)
+            if (window.DataContext is AddTagWindowViewModel vm && vm.ShouldSaveNewTag == true)
             {
                 if (vm.TagName != null)
                 {
