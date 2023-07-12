@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ToDoLite.App.Windows.TextToColor\ToDoLite.App.Windows.TextToColor.csproj" />
     <ProjectReference Include="..\ToDoLite.Core.Windows\ToDoLite.Core.Windows.csproj" />
     <ProjectReference Include="..\ToDoLite.Core\ToDoLite.Core.csproj" />
   </ItemGroup>
@@ -40,6 +41,9 @@
     <Page Update="Resources\ToDoListStyle.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\TagView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
 

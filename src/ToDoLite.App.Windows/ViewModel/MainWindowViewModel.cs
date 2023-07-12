@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -19,7 +21,7 @@ namespace ToDoLite.App.Windows.ViewModel
     public class MainWindowViewModel : ObservableObject, IDisposable
     {
 #pragma warning disable CS8618
-        public MainWindowViewModel(){}
+        public MainWindowViewModel() { }
 #pragma warning restore CS8618
 
         public MainWindowViewModel(IToDoItemStorage toDoItemStorage, ITagRepository tagRepository, IToDoItemGenerator toDoItemGenerator, IConfirmationEmitter confirmationEmitter, IDataExporter dataExporter)
@@ -30,12 +32,17 @@ namespace ToDoLite.App.Windows.ViewModel
             _confirmationEmitter = confirmationEmitter;
             _dataExporter = dataExporter;
             ToDoItems = new ObservableCollection<ToDoItemViewModel>();
+            AvailableTags = new ObservableCollection<TagViewModel>();
+            ToDoItemsCollectionView = CollectionViewSource.GetDefaultView(ToDoItems);
+            ToDoItemsCollectionView.Filter = (item) => CurrentTagFilter == null ? true : ((ToDoItemViewModel)item).Tags.Any(x => x.Name == CurrentTagFilter.Name);
             ToDoItems.CollectionChanged += OnToDoItemsCollectionChange;
             DeleteItemCommand = new AsyncRelayCommand<ToDoItemViewModel>(DeleteItem);
             OpenOptionsWindowCommand = new RelayCommand(ShowOptionsWindow);
+            OpenAddNewItemWindowCommand = new RelayCommand(() => OpenAddNewItemWindow());
             ExportDataCommand = new AsyncRelayCommand(ExportDataAsync);
             ImportDataCommand = new AsyncRelayCommand(ImportDataAsync);
-            OpenAddNewItemWindowCommand = new RelayCommand(()=>OpenAddNewItemWindow());
+            ClearTagFilterCommand = new RelayCommand(() => CurrentTagFilter = null);
+
         }
 
         private readonly IConfirmationEmitter _confirmationEmitter;
@@ -45,10 +52,11 @@ namespace ToDoLite.App.Windows.ViewModel
         private readonly IToDoItemStorage _storage;
         private readonly ITagRepository _tagRepository;
         private bool _isDisposed;
+        private TagViewModel? currentTagFilter;
 
         public bool ShowCompleted
         {
-            get => Settings.Instance.ShowCompleted; 
+            get => Settings.Instance.ShowCompleted;
             set
             {
                 Settings.Instance.ShowCompleted = value;
@@ -56,13 +64,28 @@ namespace ToDoLite.App.Windows.ViewModel
             }
         }
 
-        public ObservableCollection<ToDoItemViewModel> ToDoItems { get; set; }
+        public ObservableCollection<TagViewModel> AvailableTags { get; set; }
 
-        public async Task Initialize()
+        public TagViewModel? CurrentTagFilter
+        {
+            get => currentTagFilter;
+            set
+            {
+                currentTagFilter = value;
+                ToDoItemsCollectionView.Refresh();
+                OnPropertyChanged();
+            }
+        }
+        private ObservableCollection<ToDoItemViewModel> ToDoItems { get; set; }
+
+        public ICollectionView ToDoItemsCollectionView { get; }
+
+        public async Task InitializeAsync()
         {
             try
             {
                 await LoadItemsAsync();
+                await LoadTagsAsync();
             }
             catch (Exception e)
             {
@@ -81,10 +104,29 @@ namespace ToDoLite.App.Windows.ViewModel
             async Task LoadItemsAsync()
             {
                 var items = await _storage.LoadAllAsync();
-                foreach (var item in items.OrderBy(x=>x.CreatedDateTime))
+                foreach (var item in items.OrderBy(x => x.CreatedDateTime))
                 {
                     ToDoItems.Insert(0, new ToDoItemViewModel(item, _tagRepository));
                 }
+            }
+
+            async Task LoadTagsAsync()
+            {
+                var tags = await _tagRepository.LoadAllUsedTagsAsync();
+                foreach (var tag in tags)
+                {
+                    AvailableTags.Add(new TagViewModel(tag));
+                }
+                _tagRepository.TagAssigned += _tagRepository_TagAssigned;
+            }
+        }
+
+        private void _tagRepository_TagAssigned(object? sender, TagAssignedEventArgs e)
+        {
+            var existingTag = AvailableTags.FirstOrDefault(t => e.Tag.Name == t.Name);
+            if (existingTag == null)
+            {
+                AvailableTags.Add(new TagViewModel(e.Tag));
             }
         }
 
@@ -99,11 +141,11 @@ namespace ToDoLite.App.Windows.ViewModel
         }
 
         public ICommand DeleteItemCommand { get; set; }
-
         public ICommand OpenOptionsWindowCommand { get; set; }
         public ICommand ExportDataCommand { get; set; }
         public ICommand ImportDataCommand { get; set; }
         public ICommand OpenAddNewItemWindowCommand { get; set; }
+        public ICommand ClearTagFilterCommand { get; set; }
 
         private void ShowOptionsWindow()
         {
@@ -178,7 +220,7 @@ namespace ToDoLite.App.Windows.ViewModel
                 return;
             }
 
-            Task.Run(()=>_storage.InsertAsync(todoItem));
+            Task.Run(() => _storage.InsertAsync(todoItem));
             ToDoItems.Insert(0, new ToDoItemViewModel(todoItem, _tagRepository));
             _confirmationEmitter.Done();
         }

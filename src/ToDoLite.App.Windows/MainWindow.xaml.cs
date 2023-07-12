@@ -41,7 +41,7 @@ public partial class MainWindow : Window, IDisposable
             MessageBox.Show($"Failed to register a hotkey. Perhaps another instance of the app is already running?\r\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
         }
 
-        await _viewModel.Initialize();
+        await _viewModel.InitializeAsync();
     }
 
     protected override void OnStateChanged(EventArgs e)

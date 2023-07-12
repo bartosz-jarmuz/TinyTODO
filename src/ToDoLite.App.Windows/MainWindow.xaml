@@ -29,8 +29,23 @@
       </MenuItem>
       <MenuItem IsCheckable="True" IsChecked="{Binding ShowCompleted, Mode=TwoWay}"  Header="Show completed"/>
       <MenuItem Command="{Binding OpenAddNewItemWindowCommand}" Header="Add _new item" Background="LightSeaGreen" BorderThickness="1" BorderBrush="Black"/>
-        </Menu>
-    <controls:ToDoItemsListBox ItemsSource="{Binding ToDoItems}" 
+    </Menu>
+        <DockPanel DockPanel.Dock="Top" Background="WhiteSmoke" LastChildFill="True">
+            <TextBlock Text="Filter by tag:" Margin="2"/>
+            <Button Content="✖" ToolTip="Clear filter" Command="{Binding ClearTagFilterCommand}"/>
+            <ListBox ItemsSource="{Binding AvailableTags}"
+                     SelectedItem="{Binding CurrentTagFilter}" 
+                     ItemTemplate="{StaticResource TagDataTemplate}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                
+            </ListBox>
+        </DockPanel>
+        
+        <controls:ToDoItemsListBox ItemsSource="{Binding ToDoItemsCollectionView}" 
                AlternationCount="2"
                ScrollViewer.CanContentScroll="False"
                Style="{StaticResource ToDoListStyle}"

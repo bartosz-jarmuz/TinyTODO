@@ -39,22 +39,16 @@
             <GroupBox.Header>
               <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Tags"/>
-                <Button Content="Add" Command="{Binding AddTagCommand}" Margin="3,0"/>
+                <Button Content=" Add..."  Command="{Binding AddTagCommand}" Margin="3,0"/>
               </StackPanel>
             </GroupBox.Header>
-            <ListBox ItemsSource="{Binding Tags}">
+            <ListBox ItemsSource="{Binding Tags}"
+                     ItemTemplate="{StaticResource TagDataTemplate}">
               <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                   <WrapPanel IsItemsHost="True" />
                 </ItemsPanelTemplate>
               </ListBox.ItemsPanel>
-              <ListBox.ItemTemplate>
-                <DataTemplate>
-                  <StackPanel>
-                    <TextBox Background="Transparent" BorderThickness="0" TextWrapping="Wrap" IsReadOnly="True" Text="{Binding Name}" ToolTip="{Binding Description}"/>
-                  </StackPanel>
-                </DataTemplate>
-              </ListBox.ItemTemplate>
             </ListBox>
           </GroupBox>
         </StackPanel>

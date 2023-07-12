@@ -34,7 +34,11 @@ namespace ToDoLite.App.Windows.ViewModel
                 Image = ImageConverter.GetImage(item.Images.First().Bytes);
             }
 
-            Tags = new ObservableCollection<Tag>(Item.Tags);
+            Tags = new ObservableCollection<TagViewModel>();
+            foreach (var tag in Item.Tags)
+            {
+                Tags.Add(new TagViewModel(tag));
+            }
             TextData = StringConverter.GetString(item.RawData);
 
             _ = StartTimestampUpdateLoop();
@@ -99,7 +103,7 @@ namespace ToDoLite.App.Windows.ViewModel
                     {
                         Item.Tags.Add(tag);
                         ItemUpdated?.Invoke(this, EventArgs.Empty);
-                        Tags.Add(tag);
+                        Tags.Add(new TagViewModel(tag));
                     }
                 }
             }
@@ -127,7 +131,7 @@ namespace ToDoLite.App.Windows.ViewModel
         public BitmapImage? Image { get; }
         public ToDoItem Item { get; }
 
-        public ObservableCollection<Tag> Tags { get; }
+        public ObservableCollection<TagViewModel> Tags { get; }
 
         public bool IsTextBoxFocused
         {

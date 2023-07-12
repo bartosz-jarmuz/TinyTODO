@@ -9,6 +9,8 @@ namespace ToDoLite.Core.Persistence
         private readonly ToDoLiteDbContext _toDoDbContext;
         private bool _isDisposed;
 
+        public event EventHandler<TagAssignedEventArgs>? TagAssigned;
+
         public SqliteToDoItemStorage()
         {
             _toDoDbContext = new ToDoLiteDbContext();
@@ -31,30 +33,39 @@ namespace ToDoLite.Core.Persistence
             return await _toDoDbContext.ToDoItems.Include(x=>x.Images).Include(x=>x.Tags).ToListAsync();
         }
 
-        public async Task<IEnumerable<Tag>> LoadAllTagsAsync()
+        public async Task<IEnumerable<Tag>> LoadAllUsedTagsAsync()
         {
-            return await _toDoDbContext.Tags.ToListAsync();
+            return await _toDoDbContext.Tags.Where(x=>x.ToDoItems.Count > 0).ToListAsync();
 
         }
 
         public async Task<Tag> GetOrCreateTagAsync(string name, string? description)
         {
-            var existingTag = await _toDoDbContext.Tags.FirstOrDefaultAsync(x => x.Name == name);
-            if (existingTag != null)
+            var tag = await _toDoDbContext.Tags.FirstOrDefaultAsync(x => x.Name == name);
+            if (tag == null)
             {
-                return existingTag;
-            }
-            else
-            {
-                var tag = new Tag(name)
+                tag = new Tag(name)
                 {
                     Description = description
                 };
                 _toDoDbContext.Tags.Add(tag);
-                return tag;
             }
+            OnTagAssigned(tag);
+            return tag;
+        }
 
+        private void OnTagAssigned(Tag newTag)
+        {
+            // Make a temporary copy of the event to avoid possibility of
+            // a race condition if the last subscriber unsubscribes
+            // immediately after the null check and before the event is raised.
+            //https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/events/how-to-publish-events-that-conform-to-net-framework-guidelines
+            var copyOfEvent = TagAssigned;
 
+            if (copyOfEvent != null)
+            {
+                copyOfEvent(this, new TagAssignedEventArgs(newTag));
+            }
         }
 
         public async Task RecreateDatabaseAsync()

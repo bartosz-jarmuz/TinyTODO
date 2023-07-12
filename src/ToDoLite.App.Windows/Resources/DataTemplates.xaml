@@ -9,5 +9,9 @@
   <DataTemplate x:Key="ToDoItemDataTemplate" DataType="{x:Type vm:ToDoItemViewModel}">
     <views:ToDoItemView />
   </DataTemplate>
+    
+ <DataTemplate x:Key="TagDataTemplate" DataType="{x:Type vm:TagViewModel}">
+    <views:TagView />
+  </DataTemplate>
 
 </ResourceDictionary>
