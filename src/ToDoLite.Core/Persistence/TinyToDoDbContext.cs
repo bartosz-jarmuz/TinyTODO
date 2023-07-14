@@ -8,21 +8,26 @@ namespace ToDoLite.Core.Persistence
     {
 #pragma warning disable CS8618
         public ToDoLiteDbContext()
-#pragma warning restore CS8618
         {
             Database.Migrate();
         }
 
+        public ToDoLiteDbContext(DbContextOptions<ToDoLiteDbContext> options) : base(options) { }
+#pragma warning restore CS8618
         public DbSet<ToDoItem> ToDoItems { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Setting> Settings { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Filename=ToDoLite.db", options =>
+            if (!optionsBuilder.IsConfigured)
             {
-                options.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
-            });
+                optionsBuilder.UseSqlite("Filename=ToDoLite.db", options =>
+                {
+                    options.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
+                });
+            }
+
             base.OnConfiguring(optionsBuilder);
         }
 
