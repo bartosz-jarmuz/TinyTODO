@@ -14,7 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		todo-meta.md = todo-meta.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoLite.App.Windows.TextToColor", "ToDoLite.App.Windows.TextToColor\ToDoLite.App.Windows.TextToColor.csproj", "{8C8C76E3-91BF-4E57-98D0-19443DA77C6E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoLite.App.Windows.TextToColor", "ToDoLite.App.Windows.TextToColor\ToDoLite.App.Windows.TextToColor.csproj", "{8C8C76E3-91BF-4E57-98D0-19443DA77C6E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoLite.App.Windows.UnitTests", "ToDoLite.App.Windows.UnitTests\ToDoLite.App.Windows.UnitTests.csproj", "{B8282B76-81C9-44F4-B1C8-6AB349273788}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{8C8C76E3-91BF-4E57-98D0-19443DA77C6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C8C76E3-91BF-4E57-98D0-19443DA77C6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C8C76E3-91BF-4E57-98D0-19443DA77C6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8282B76-81C9-44F4-B1C8-6AB349273788}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8282B76-81C9-44F4-B1C8-6AB349273788}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8282B76-81C9-44F4-B1C8-6AB349273788}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8282B76-81C9-44F4-B1C8-6AB349273788}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
