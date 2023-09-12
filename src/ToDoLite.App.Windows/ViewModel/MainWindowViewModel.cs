@@ -113,12 +113,18 @@ namespace ToDoLite.App.Windows.ViewModel
         private async Task ExportDataAsync()
         {
             var data = await _storage.LoadAllAsync();
-            if (data!= null)
+
+            try
             {
-                var path = Path.Combine(Directory.GetCurrentDirectory(), $"{DateTime.Now.ToString("yyyy-MM-HH")} ToDoLite DataExport.json");
+                var path = Path.Combine(Directory.GetCurrentDirectory(), $"{DateTime.Now:yyyy-MM-dd HH-mm-ss} ToDoLite DataExport.json");
                 _dataExporter.ExportData(data, path);
                 MessageBox.Show(path, "Data exported successfully", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
         }   
         
         private async Task ImportDataAsync()
