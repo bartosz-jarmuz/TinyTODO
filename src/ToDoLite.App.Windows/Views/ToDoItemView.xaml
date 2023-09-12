@@ -42,7 +42,7 @@
                 <Button Content=" Add..."  Command="{Binding AddTagCommand}" Margin="3,0"/>
               </StackPanel>
             </GroupBox.Header>
-            <ListBox ItemsSource="{Binding Tags}"
+                        <ListBox ItemsSource="{Binding TagViewModels}"
                      ItemTemplate="{StaticResource TagDataTemplate}">
               <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>

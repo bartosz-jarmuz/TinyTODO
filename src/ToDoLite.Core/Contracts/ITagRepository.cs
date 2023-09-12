@@ -6,7 +6,5 @@ namespace ToDoLite.Core.Contracts
     {
         Task<IEnumerable<Tag>> LoadAllUsedTagsAsync();
         Task<Tag> GetOrCreateTagAsync(string name, string? description);
-
-        public event EventHandler<TagAssignedEventArgs> TagAssigned;
     }
 }

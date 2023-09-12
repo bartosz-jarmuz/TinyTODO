@@ -20,11 +20,13 @@ namespace ToDoLite.App.Windows.ViewModel
     {
         public TagViewModel(Tag tag)
         {
+            Tag = tag;
             Name = tag.Name;
             Description = tag.Description;
             BackColor = TextToColorConverter.Instance.GetBrush(tag.Name);
         }
 
+        public Tag Tag { get; }
         public string Name { get; }
         public string? Description { get; }
         public Brush? BackColor { get; }

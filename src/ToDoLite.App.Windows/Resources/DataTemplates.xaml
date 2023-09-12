@@ -13,5 +13,9 @@
  <DataTemplate x:Key="TagDataTemplate" DataType="{x:Type vm:TagViewModel}">
     <views:TagView />
   </DataTemplate>
+    
+  <DataTemplate x:Key="TagFilterDataTemplate" DataType="{x:Type vm:TagFilterViewModel}">
+    <views:TagFilterView />
+  </DataTemplate>
 
 </ResourceDictionary>

@@ -32,9 +32,9 @@ namespace ToDoLite.App.Windows.ViewModel
             _confirmationEmitter = confirmationEmitter;
             _dataExporter = dataExporter;
             ToDoItems = new ObservableCollection<ToDoItemViewModel>();
-            AvailableTags = new ObservableCollection<TagViewModel>();
+            FilteringTags = new ObservableCollection<TagFilterViewModel>();
             ToDoItemsCollectionView = CollectionViewSource.GetDefaultView(ToDoItems);
-            ToDoItemsCollectionView.Filter = (item) => CurrentTagFilter == null ? true : ((ToDoItemViewModel)item).Tags.Any(x => x.Name == CurrentTagFilter.Name);
+            ToDoItemsCollectionView.Filter = (item) => CurrentTagFilter == null ? true : ((ToDoItemViewModel)item).TagViewModels.Any(x => x.Name == CurrentTagFilter.Name);
             ToDoItems.CollectionChanged += OnToDoItemsCollectionChange;
             DeleteItemCommand = new AsyncRelayCommand<ToDoItemViewModel>(DeleteItem);
             OpenOptionsWindowCommand = new RelayCommand(ShowOptionsWindow);
@@ -64,7 +64,7 @@ namespace ToDoLite.App.Windows.ViewModel
             }
         }
 
-        public ObservableCollection<TagViewModel> AvailableTags { get; set; }
+        public ObservableCollection<TagFilterViewModel> FilteringTags { get; set; }
 
         public TagViewModel? CurrentTagFilter
         {
@@ -76,7 +76,8 @@ namespace ToDoLite.App.Windows.ViewModel
                 OnPropertyChanged();
             }
         }
-        private ObservableCollection<ToDoItemViewModel> ToDoItems { get; set; }
+
+        public ObservableCollection<ToDoItemViewModel> ToDoItems { get; set; }
 
         public ICollectionView ToDoItemsCollectionView { get; }
 
@@ -115,29 +116,54 @@ namespace ToDoLite.App.Windows.ViewModel
                 var tags = await _tagRepository.LoadAllUsedTagsAsync();
                 foreach (var tag in tags)
                 {
-                    AvailableTags.Add(new TagViewModel(tag));
+                    var usage = tag.ToDoItems.Count(x => !x.IsCompleted);
+                    FilteringTags.Add(new TagFilterViewModel(tag, usage));
                 }
-                _tagRepository.TagAssigned += _tagRepository_TagAssigned;
             }
         }
 
-        private void _tagRepository_TagAssigned(object? sender, TagAssignedEventArgs e)
+        private void OnTagAssigned(object? sender, TagAssignedEventArgs e)
         {
-            var existingTag = AvailableTags.FirstOrDefault(t => e.Tag.Name == t.Name);
+            var existingTag = FilteringTags.FirstOrDefault(t => e.Tag.Name == t.Name);
             if (existingTag == null)
             {
-                AvailableTags.Add(new TagViewModel(e.Tag));
+                FilteringTags.Add(new TagFilterViewModel(e.Tag, 1));
+            }
+            else
+            {
+                UpdateFilteringTagUsageCount(e.Tag);
             }
         }
 
-        private async Task DeleteItem(ToDoItemViewModel? todoItem)
+        private void UpdateFilteringTagUsageCount(Tag tag)
         {
-            if (todoItem == null)
+            var existingTag = FilteringTags.FirstOrDefault(t => tag.Name == t.Name);
+            if (existingTag == null)
+            {
+                FilteringTags.Add(new TagFilterViewModel(tag, 1));
+            }
+            else
+            {
+                existingTag.UsageCount = existingTag.Tag.ToDoItems.Count(i => !i.IsCompleted);
+            }
+        }
+
+        private async Task DeleteItem(ToDoItemViewModel? toDoItem)
+        {
+            if (toDoItem == null)
             {
                 return;
             }
-            ToDoItems.Remove(todoItem);
-            await _storage.RemoveAsync(todoItem.Item);
+            foreach (var tagViewModel in toDoItem.TagViewModels)
+            {
+                tagViewModel.Tag.ToDoItems.Remove(toDoItem.Item);
+                UpdateFilteringTagUsageCount(tagViewModel.Tag);
+            }
+
+
+            ToDoItems.Remove(toDoItem);
+           
+            await _storage.RemoveAsync(toDoItem.Item);
         }
 
         public ICommand DeleteItemCommand { get; set; }
@@ -204,25 +230,30 @@ namespace ToDoLite.App.Windows.ViewModel
             {
                 if (addItemViewModel.ToDoItem != null)
                 {
-                    Task.Run(() => _storage.InsertAsync(addItemViewModel.ToDoItem));
-                    ToDoItems.Insert(0, new ToDoItemViewModel(addItemViewModel.ToDoItem, _tagRepository));
-                    _confirmationEmitter.Done();
+                    AddToDoItem(addItemViewModel.ToDoItem);
                 }
             }
         }
 
-        public void CreateToDoItemFromClipboardContent(object? _, object __)
+        public void CreateToDoItemFromClipboardContent(object? _, object? __)
         {
-            var todoItem = _toDoItemGenerator.GenerateItem();
-            if (todoItem == null)
+            var toDoItem = _toDoItemGenerator.GenerateItem();
+            AddToDoItem(toDoItem);
+        }
+
+        private void AddToDoItem(ToDoItem? toDoItem)
+        {
+            if (toDoItem == null)
             {
                 _confirmationEmitter.NoData();
-                return;
             }
-
-            Task.Run(() => _storage.InsertAsync(todoItem));
-            ToDoItems.Insert(0, new ToDoItemViewModel(todoItem, _tagRepository));
-            _confirmationEmitter.Done();
+            else
+            {
+                Task.Run(() => _storage.InsertAsync(toDoItem));
+                ToDoItems.Insert(0, new ToDoItemViewModel(toDoItem, _tagRepository));
+                _confirmationEmitter.Done();
+            }
+            
         }
 
         void OnToDoItemsCollectionChange(object? sender, NotifyCollectionChangedEventArgs e)
@@ -236,9 +267,30 @@ namespace ToDoLite.App.Windows.ViewModel
                     item.ItemUpdated -= OnToDoItemPropertyChanged;
         }
 
+        //tags are :
+        // - created from a todo item (new tag)
+        // - reused - assigned existing tag to new item (tag usage count increases)
+        // - deleted explicitly from a tag view (which means they are removed from filter view and all todo items)
+        // - updated when an item is deleted (tag usage count decreases)
+        // - updated when an item is completed or un-completed (tag usage count decreases or increases)
+        // - updated when a tag is removed (unassigned) from an item
+
         async void OnToDoItemPropertyChanged(object? sender, EventArgs eventArgs)
         {
             await _storage.SaveAsync();
+            var toDoItemViewModel = sender as ToDoItemViewModel;
+            if (toDoItemViewModel == null)
+                return;
+            if (eventArgs is TagAssignedEventArgs tagAssigned)
+            {
+                OnTagAssigned(sender, tagAssigned);
+            } else if (eventArgs is ItemCompletedStateChangedEventArgs)
+            {
+                foreach (var tagVm in toDoItemViewModel.TagViewModels)
+                {
+                    UpdateFilteringTagUsageCount(tagVm.Tag);
+                }
+            }
         }
 
         private void UpdateSettingBasedProperties()

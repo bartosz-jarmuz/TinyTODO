@@ -33,9 +33,9 @@
         <DockPanel DockPanel.Dock="Top" Background="WhiteSmoke" LastChildFill="True">
             <TextBlock Text="Filter by tag:" Margin="2"/>
             <Button Content="✖" ToolTip="Clear filter" Command="{Binding ClearTagFilterCommand}"/>
-            <ListBox ItemsSource="{Binding AvailableTags}"
+            <ListBox ItemsSource="{Binding FilteringTags}"
                      SelectedItem="{Binding CurrentTagFilter}" 
-                     ItemTemplate="{StaticResource TagDataTemplate}">
+                     ItemTemplate="{StaticResource TagFilterDataTemplate}">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
