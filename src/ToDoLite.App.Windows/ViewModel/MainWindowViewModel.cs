@@ -209,7 +209,7 @@ namespace ToDoLite.App.Windows.ViewModel
                     foreach (var item in items)
                     {
                         await _storage.InsertAsync(item);
-                        ToDoItems.Insert(0, new ToDoItemViewModel(item));
+                        ToDoItems.Insert(0, new ToDoItemViewModel(item, _tagRepository));
                     }
                     MessageBox.Show($"Loaded {items.Count} items.", "Data imported successfully", MessageBoxButton.OK, MessageBoxImage.Information);
                 }

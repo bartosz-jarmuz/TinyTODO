@@ -20,7 +20,7 @@ namespace ToDoLite.App.Windows.UnitTests
             using var context = TestContextProvider.Get();
             var storage = new SqliteToDoItemStorage(context.DbContext);
             var generator = new MockToDoItemGenerator();
-            var mainVm = new MainWindowViewModel(storage, storage, generator, NullConfirmationEmitter.Instance);
+            var mainVm = new MainWindowViewModel(storage, storage, generator, NullConfirmationEmitter.Instance, NullDataExporter.Instance);
             generator.SetGenerateItemDelegate("Foo");
 
             //act
