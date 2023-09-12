@@ -43,6 +43,7 @@ namespace ToDoLite.App.Windows
             services.AddSingleton<IContextProvider, WindowsContextProvider>();
             services.AddSingleton<IToDoItemGenerator, ToDoItemGenerator>();
             services.AddSingleton<IToDoItemStorage, SqliteToDoItemStorage>();
+            services.AddSingleton<IDataExporter, JsonDataExporter>();
 
 
             services.AddTransient<MainWindowViewModel>();

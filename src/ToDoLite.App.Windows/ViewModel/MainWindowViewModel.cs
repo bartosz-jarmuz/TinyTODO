@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
 using ToDoLite.Core.Contracts;
 using ToDoLite.Core.DataModel;
 using Settings = ToDoLite.Core.Persistence.Settings;
@@ -20,19 +22,23 @@ namespace ToDoLite.App.Windows.ViewModel
         public MainWindowViewModel(){}
 #pragma warning restore CS8618
 
-        public MainWindowViewModel(IToDoItemStorage toDoItemStorage, IToDoItemGenerator toDoItemGenerator, IConfirmationEmitter confirmationEmitter)
+        public MainWindowViewModel(IToDoItemStorage toDoItemStorage, IToDoItemGenerator toDoItemGenerator, IConfirmationEmitter confirmationEmitter, IDataExporter dataExporter)
         {
             _storage = toDoItemStorage;
             _toDoItemGenerator = toDoItemGenerator;
             _confirmationEmitter = confirmationEmitter;
+            _dataExporter = dataExporter;
             ToDoItems = new ObservableCollection<ToDoItemViewModel>();
             ToDoItems.CollectionChanged += OnToDoItemsCollectionChange;
             DeleteItemCommand = new AsyncRelayCommand<ToDoItemViewModel>(DeleteItem);
             OpenOptionsWindowCommand = new RelayCommand(ShowOptionsWindow);
+            ExportDataCommand = new AsyncRelayCommand(ExportDataAsync);
+            ImportDataCommand = new AsyncRelayCommand(ImportDataAsync);
             OpenAddNewItemWindowCommand = new RelayCommand(()=>OpenAddNewItemWindow());
         }
 
         private readonly IConfirmationEmitter _confirmationEmitter;
+        private readonly IDataExporter _dataExporter;
         private readonly IToDoItemGenerator _toDoItemGenerator;
 
         private readonly IToDoItemStorage _storage;
@@ -93,6 +99,8 @@ namespace ToDoLite.App.Windows.ViewModel
         public ICommand DeleteItemCommand { get; set; }
 
         public ICommand OpenOptionsWindowCommand { get; set; }
+        public ICommand ExportDataCommand { get; set; }
+        public ICommand ImportDataCommand { get; set; }
         public ICommand OpenAddNewItemWindowCommand { get; set; }
 
         private void ShowOptionsWindow()
@@ -100,6 +108,40 @@ namespace ToDoLite.App.Windows.ViewModel
             var settings = new SettingsWindow(Settings.Instance);
             settings.ShowDialog();
             this.UpdateSettingBasedProperties();
+        } 
+        
+        private async Task ExportDataAsync()
+        {
+            var data = await _storage.LoadAllAsync();
+            if (data!= null)
+            {
+                var path = Path.Combine(Directory.GetCurrentDirectory(), $"{DateTime.Now.ToString("yyyy-MM-HH")} ToDoLite DataExport.json");
+                _dataExporter.ExportData(data, path);
+                MessageBox.Show(path, "Data exported successfully", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }   
+        
+        private async Task ImportDataAsync()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+
+                    var items = _dataExporter.ImportData(openFileDialog.FileName);
+                    foreach (var item in items)
+                    {
+                        await _storage.InsertAsync(item);
+                        ToDoItems.Insert(0, new ToDoItemViewModel(item));
+                    }
+                    MessageBox.Show($"Loaded {items.Count} items.", "Data imported successfully", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString(), "Import Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         } 
         
         public void OpenAddNewItemWindow(object? _ = null, object? __ = null)

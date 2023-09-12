@@ -22,6 +22,8 @@
 
       <MenuItem Header="_App" Command="{Binding OpenOptionsWindowCommand}">
         <MenuItem Header="Options" Command="{Binding OpenOptionsWindowCommand}"/>
+        <MenuItem Header="Import data" Command="{Binding ImportDataCommand}"/>
+        <MenuItem Header="Export data" Command="{Binding ExportDataCommand}"/>
         <Separator/>
         <MenuItem Header="E_xit" Click="ExitMenuItem_OnClick" />
       </MenuItem>
